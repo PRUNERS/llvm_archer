@@ -58,6 +58,12 @@ echoc() { echo -e "${RED}$1${NC}"; }
 LLVM_INSTALL=/usr
 HTTP=false
 GCC_TOOLCHAIN_PATH=
+BUILD_CMD=ninja
+BUILD_SYSTEM="Ninja"
+if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
+    BUILD_CMD=make
+    BUILD_SYSTEM="Unix Makefiles"
+fi
 
 # CC and CXX
 for i in "$@"
@@ -65,6 +71,10 @@ do
     case $i in
 	--prefix=*)
 	    LLVM_INSTALL="${i#*=}"
+	    shift
+	    ;;
+	--build-system=*)
+	    BUILD_SYSTEM="${i#*=}"
 	    shift
 	    ;;
 	--http)
