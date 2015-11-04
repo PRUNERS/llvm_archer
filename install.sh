@@ -182,7 +182,7 @@ echoc "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
 CC=$(which gcc) CXX=$(which g++) cmake -G "Ninja" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LINK_POLLY_INTO_TOOLS:Bool=ON -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp ${LLVM_SRC}
 ninja -j${PROCS} -l${PROCS}
-make install
+ninja install
 
 export PATH=${LLVM_INSTALL}/bin:${PATH}
 export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
@@ -190,7 +190,7 @@ export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
 # Compiling and installing Intel OpenMP Runtime
 echoc "Building LLVM OpenMP Runtime..."
 cd ${OPENMPRT}/runtime
-mkdir build && cd build
+mkdir -p build && cd build
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
 CC=clang CXX=clang++ cmake -G 'Ninja' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
 ninja -j${PROCS} -l${PROCS}
