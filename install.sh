@@ -64,6 +64,7 @@ if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
     BUILD_CMD=make
     BUILD_SYSTEM="Unix Makefiles"
 fi
+echo ${BUILD_SYSTEM}
 
 # CC and CXX
 for i in "$@"
@@ -202,12 +203,12 @@ echoc "Building LLVM OpenMP Runtime..."
 cd ${OPENMPRT_SRC}/runtime
 mkdir -p build && cd build
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
-CC=clang CXX=clang++ cmake -G '${BUILD_SYSTEM}' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
+CC=clang CXX=clang++ cmake -G "${BUILD_SYSTEM}" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 rm -rf *
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
-CC=clang CXX=clang++ cmake -G '${BUILD_SYSTEM}' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=TRUE ..
+CC=clang CXX=clang++ cmake -G "${BUILD_SYSTEM}" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=TRUE ..
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 
