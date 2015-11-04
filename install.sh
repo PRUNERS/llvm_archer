@@ -150,7 +150,7 @@ CLANG_SRC=${BASE}/llvm_src/tools/clang
 LLVMRT_SRC=${BASE}/llvm_src/projects/compiler-rt
 POLLY_SRC=${LLVM_SRC}/tools/polly
 ARCHER_SRC=${BASE}/llvm_src/tools/archer
-OPENMPRT=${BASE}/openmp-rt
+OPENMPRT_SRC=${BASE}/openmp-rt
 LLVM_BUILD=${BASE}/llvm_build
 mkdir -p ${LLVM_BUILD}
 
@@ -199,7 +199,7 @@ export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
 
 # Compiling and installing Intel OpenMP Runtime
 echoc "Building LLVM OpenMP Runtime..."
-cd ${OPENMPRT}/runtime
+cd ${OPENMPRT_SRC}/runtime
 mkdir -p build && cd build
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
 CC=clang CXX=clang++ cmake -G '${BUILD_SYSTEM}' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
