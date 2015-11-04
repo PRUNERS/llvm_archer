@@ -190,9 +190,9 @@ git clone ${OPENMPRT_REPO} ${OPENMPRT_SRC}
 echo
 echoc "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-CC=$(which gcc) CXX=$(which g++) cmake -G "Ninja" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LINK_POLLY_INTO_TOOLS:Bool=ON -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp ${LLVM_SRC}
-ninja -j${PROCS} -l${PROCS}
-ninja install
+CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LINK_POLLY_INTO_TOOLS:Bool=ON -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp ${LLVM_SRC}
+${BUILD_CMD} -j${PROCS} -l${PROCS}
+${BUILD_CMD} install
 
 export PATH=${LLVM_INSTALL}/bin:${PATH}
 export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
@@ -202,14 +202,14 @@ echoc "Building LLVM OpenMP Runtime..."
 cd ${OPENMPRT}/runtime
 mkdir -p build && cd build
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
-CC=clang CXX=clang++ cmake -G 'Ninja' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
-ninja -j${PROCS} -l${PROCS}
-ninja install
+CC=clang CXX=clang++ cmake -G '${BUILD_SYSTEM}' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=FALSE ..
+${BUILD_CMD} -j${PROCS} -l${PROCS}
+${BUILD_CMD} install
 rm -rf *
 # Compiling LLVM Intel OpenMP RT (without ThreadSanitizer Support)
-CC=clang CXX=clang++ cmake -G 'Ninja' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=TRUE ..
-ninja -j${PROCS} -l${PROCS}
-ninja install
+CC=clang CXX=clang++ cmake -G '${BUILD_SYSTEM}' -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LIBOMP_TSAN_SUPPORT=TRUE ..
+${BUILD_CMD} -j${PROCS} -l${PROCS}
+${BUILD_CMD} install
 
 echo
 echo "In order to use LLVM/Clang set the following path variables:"
