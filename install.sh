@@ -130,19 +130,19 @@ LLVMRT_COMMIT=""
 CLANG_COMMIT=""
 POLLY_COMMIT=""
 if [ "$HTTP" == "true" ]; then
-    LLVM_REPO="-b archer https://github.com/simoatze/llvm.git"
-    CLANG_REPO="-b archer https://github.com/simoatze/clang.git"
-    LLVMRT_REPO="https://github.com/simoatze/compiler-rt.git"
+    LLVM_REPO="-b archer https://github.com/PRUNER/llvm.git"
+    CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
+    LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
     POLLY_REPO="https://github.com/llvm-mirror/polly.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
-    OPENMPRT_REPO="https://github.com/simoatze/openmp.git"
+    OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
 else
-    LLVM_REPO="-b archer git@github.com:simoatze/llvm.git"
-    CLANG_REPO="-b archer git@github.com:simoatze/clang.git"
-    LLVMRT_REPO="git@github.com:simoatze/compiler-rt.git"
+    LLVM_REPO="-b archer git@github.com:PRUNER/llvm.git"
+    CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
+    LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
     POLLY_REPO="git@github.com:llvm-mirror/polly.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
-    OPENMPRT_REPO="git@github.com:simoatze/openmp.git"
+    OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
 
 # LLVM installation directory
