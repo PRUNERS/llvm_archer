@@ -64,7 +64,6 @@ if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
     BUILD_CMD=make
     BUILD_SYSTEM="Unix Makefiles"
 fi
-echo ${BUILD_SYSTEM}
 
 # CC and CXX
 for i in "$@"
