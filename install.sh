@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+#set -x
 #
 # Copyright (c) 2015, Lawrence Livermore National Security, LLC.
 # 
@@ -52,11 +54,76 @@ else
 fi
 
 RED=$ESCAPE'[0;31m'
+GREEN=$ESCAPE'[0;32m'
 NC=$ESCAPE'[0m'
-echoc() { echo -e "${RED}$1${NC}"; }
+echoc() { echo -e "${RED}$@${NC}"; }
+echook() { echo -e "${GREEN}$@${NC}"; }
+
+git_clone_or_pull() # $1 = url, $2 = target directory
+{
+if [ "$1" = "-b" ]
+then
+	local CLONE_BRANCH="-b $2"
+	local PUSH_BRANCH=$2
+	shift;shift;
+fi
+
+if [ ! -d ${LLVMRT_SRC} ]
+then
+        git clone $CLONE_BRANCH $1 $2
+else
+        cd $2
+        if [ -n "$PUSH_BRANCH" ]
+        then
+        	git checkout $PUSH_BRANCH
+        fi
+	if [ "$UPDATE" == "false" ]
+	then
+		return
+	fi
+        git pull $1 $PUSH_BRANCH
+fi
+}
+
+# Check requirements
+myerrors=0
+if mygit=$(which git) >/dev/null 2>&1
+then
+      echook Found git at $mygit [OK]
+else
+      echoc Cannot find git. Necessary for building ARCHER. [ERROR]
+      myerrors=1
+fi
+
+if mycmake=$(which cmake) >/dev/null 2>&1
+then
+      mycmakeversion=$($mycmake --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+      echook Found cmake at $mycmake version $mycmakeversion [OK]
+else
+      echoc Cannot find cmake. Necessary for building ARCHER. [ERROR]
+      myerrors=1
+fi
+
+mycmakeversion=$($mycmake --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+
+if mygcc=$(which gcc) >/dev/null 2>&1
+then
+      mygccversion=$($mygcc --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+      echook Found gcc at $mygcc version $mygccversion [OK]
+else
+      echoc Cannot find gcc. Necessary for building ARCHER. [ERROR]
+      myerrors=1
+fi
+
+if [ $myerrors -gt 0 ]
+then
+      echoc Stop building ARCHER for missing requirements.
+      exit 1
+fi
 
 LLVM_INSTALL=/usr
 HTTP=false
+UPDATE=false
 GCC_TOOLCHAIN_PATH=
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
@@ -79,6 +146,10 @@ do
 	    ;;
 	--http)
 	    HTTP=true
+	    shift
+	    ;;
+	--update)
+	    UPDATE=true
 	    shift
 	    ;;
 	--gcc-toolchain-path=*)
@@ -159,32 +230,32 @@ mkdir -p ${LLVM_BUILD}
 # LLVM Sources
 echo
 echoc "Obtaining LLVM OpenMP..."
-git clone ${LLVM_REPO} ${LLVM_SRC}
+git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC}
 
 # Runtime Sources
 echo
 echoc "Obtaining LLVM OpenMP Runtime..."
-git clone ${LLVMRT_REPO} ${LLVMRT_SRC}
+git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC}
 
 # Clang Sources
 echo
 echoc "Obtaining LLVM/Clang OpenMP..."
-git clone ${CLANG_REPO} ${CLANG_SRC}
+git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC}
 
 # Polly Sources
 echo
 echoc "Obtaining Polly..."
-git clone ${POLLY_REPO} ${POLLY_SRC}
+git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC}
 
 # Archer Sources
 echo
 echoc "Obtaining Archer..."
-git clone ${ARCHER_REPO} ${ARCHER_SRC}
+git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC}
 
 # OpenMP Runtime Sources
 echo
 echoc "Obtaining LLVM OpenMP Runtime..."
-git clone ${OPENMPRT_REPO} ${OPENMPRT_SRC}
+git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC}
 
 # Compiling and installing LLVM
 echo
