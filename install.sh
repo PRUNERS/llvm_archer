@@ -91,7 +91,6 @@ fi
 
 check_version() # $1 = reference version, $2 found version, return false, iff $1 > $2
 {
-echo $@
 version1=$(echo $1 | sed 's/[^[:digit:]^.]//g' | tr '.' ' ')
 version2=$(echo $2 | sed 's/[^[:digit:]^.]//g' | tr '.' ' ')
 read -r -a v1 <<< $version1
