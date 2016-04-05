@@ -63,31 +63,56 @@ git_clone_or_pull() # $1 = url, $2 = target directory
 {
 if [ "$1" = "-b" ]
 then
-	local CLONE_BRANCH="-b $2"
-	local PUSH_BRANCH=$2
+	local BRANCH=$2
 	shift;shift;
 fi
 
 if [ ! -d ${LLVMRT_SRC} ]
 then
-        git clone $CLONE_BRANCH $1 $2
+	git clone $1 $2
+	if [ -n "$BRANCH" ]
+	then
+		cd $2
+		git checkout $BRANCH
+	fi
 else
-        cd $2
-        if [ -n "$PUSH_BRANCH" ]
-        then
-        	git checkout $PUSH_BRANCH
-        fi
+	cd $2
+	if [ -n "$BRANCH" ]
+	then
+		git checkout $BRANCH
+	fi
 	if [ "$UPDATE" == "false" ]
 	then
 		return
 	fi
-        git pull $1 $PUSH_BRANCH
+	git pull $1 $BRANCH
 fi
+}
+
+check_version() # $1 = reference version, $2 found version, return false, iff $1 > $2
+{
+echo $@
+version1=$(echo $1 | sed 's/[^[:digit:]^.]//g' | tr '.' ' ')
+version2=$(echo $2 | sed 's/[^[:digit:]^.]//g' | tr '.' ' ')
+read -r -a v1 <<< $version1
+read -r -a v2 <<< $version2
+for i in $(seq ${#v1[@]})
+do
+    if [ 0${v1[$i]} -gt 0${v2[$i]} ]
+    then
+        return 1
+    fi
+    if [ 0${v1[$i]} -lt 0${v2[$i]} ]
+    then
+        return 0
+    fi
+done
+return 0
 }
 
 # Check requirements
 myerrors=0
-if mygit=$(which git) >/dev/null 2>&1
+if mygit=$(which git 2>/dev/null)
 then
       echook Found git at $mygit [OK]
 else
@@ -95,30 +120,55 @@ else
       myerrors=1
 fi
 
-if mycmake=$(which cmake) >/dev/null 2>&1
+if mycmake=$(which cmake 2>/dev/null)
 then
-      mycmakeversion=$($mycmake --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
-      echook Found cmake at $mycmake version $mycmakeversion [OK]
+    mycmakeversion=$($mycmake --version 2>&1 | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+    if check_version 3.0 "$mycmakeversion"
+    then
+        echook Found cmake at $mycmake version $mycmakeversion [OK]
+    else
+        echoc Found cmake at $mycmake version $mycmakeversion, but version 3.0 required [OK]
+        myerrors=1
+    fi
 else
-      echoc Cannot find cmake. Necessary for building ARCHER. [ERROR]
-      myerrors=1
+    echoc Cannot find cmake. Necessary for building ARCHER. [ERROR]
+    myerrors=1
 fi
 
-mycmakeversion=$($mycmake --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
-
-if mygcc=$(which gcc) >/dev/null 2>&1
+if mygcc=$(which gcc 2>/dev/null)
 then
-      mygccversion=$($mygcc --version | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
-      echook Found gcc at $mygcc version $mygccversion [OK]
+    mygccversion=$($mygcc --version 2>&1 | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+    if check_version 4.7 "$mygccversion"
+    then
+        echook Found gcc at $mygcc version $mygccversion [OK]
+    else
+        echoc Found gcc at $mygcc version $mygccversion, but version 4.7 required [OK]
+        myerrors=1
+    fi
 else
-      echoc Cannot find gcc. Necessary for building ARCHER. [ERROR]
-      myerrors=1
+    echoc Cannot find gcc. Necessary for building ARCHER. [ERROR]
+    myerrors=1
+fi
+
+if mypython=$(which python 2>/dev/null)
+then
+    mypythonversion=$($mypython --version 2>&1 | head -n1 | sed -e 's/(.*)//' -e 's/\[.*\]//' -e 's/  */ /g')
+    if check_version 2.7 "$mypythonversion"
+    then
+        echook Found python at $mypython version $mypythonversion [OK]
+    else
+        echoc Found python at $mypython version $mypythonversion, but version 2.7 required [OK]
+        myerrors=1
+    fi
+else
+    echoc Cannot find python. Necessary for building ARCHER. [ERROR]
+    myerrors=1
 fi
 
 if [ $myerrors -gt 0 ]
 then
-      echoc Stop building ARCHER for missing requirements.
-      exit 1
+    echoc Stop building ARCHER for missing requirements.
+    exit 1
 fi
 
 LLVM_INSTALL=/usr
@@ -203,14 +253,14 @@ if [ "$HTTP" == "true" ]; then
     LLVM_REPO="-b archer https://github.com/PRUNER/llvm.git"
     CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
     LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
-    POLLY_REPO="https://github.com/llvm-mirror/polly.git"
+    POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
 else
     LLVM_REPO="-b archer git@github.com:PRUNER/llvm.git"
     CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
     LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
-    POLLY_REPO="git@github.com:llvm-mirror/polly.git"
+    POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
@@ -286,7 +336,7 @@ echo
 echo "In order to use LLVM/Clang set the following path variables:"
 echo
 echoc "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
-echoc "export LD_LIBRARY_PATH=${LLVM_INSTALL}/bin:\${LD_LIBRARY_PATH}"
+echoc "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
 echo
 echo "or add the previous line to your"
 echo "shell start-up script such as \"~/.bashrc\"".
