@@ -256,6 +256,8 @@ if [ "$HTTP" == "true" ]; then
     CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
     LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
     POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
+    LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
+    LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
 else
@@ -263,6 +265,8 @@ else
     CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
     LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
     POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
+    LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
+    LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
@@ -274,6 +278,8 @@ LLVMRT_SRC=${BASE}/llvm_src/projects/compiler-rt
 POLLY_SRC=${LLVM_SRC}/tools/polly
 ARCHER_SRC=${BASE}/llvm_src/tools/archer
 OPENMPRT_SRC=${BASE}/llvm_src/projects/openmp
+LIBCXX_SRC=${BASE}/llvm_src/projects/libcxx
+LIBCXXABI_SRC=${BASE}/llvm_src/projects/libcxxabi
 LLVM_BUILD=${BASE}/llvm_build
 mkdir -p ${LLVM_BUILD}
 
@@ -308,6 +314,16 @@ git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC}
 echo
 echoc "Obtaining LLVM OpenMP Runtime..."
 git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC}
+
+# libc++ Sources
+echo
+echoc "Obtaining LLVM libc++..."
+git_clone_or_pull ${LIBCXX_REPO} ${LIBCXX_SRC}
+
+# libc++abi Sources
+echo
+echoc "Obtaining LLVM libc++abi..."
+git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC}
 
 # Compiling and installing LLVM
 echo
