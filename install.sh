@@ -167,11 +167,11 @@ else
     myerrors=1
 fi
 
-#if [ $myerrors -gt 0 ]
-#then
-#    echoc Stop building ARCHER for missing requirements.
-#    exit 1
-#fi
+if [ $myerrors -gt 0 ]
+then
+    echoc Stop building ARCHER for missing requirements.
+    exit 1
+fi
 
 LLVM_INSTALL=/usr
 HTTP=false
