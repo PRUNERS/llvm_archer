@@ -226,7 +226,7 @@ do
 done
 
 echo
-echoc "LLVM will be installed at [${LLVM_INSTALL}]"
+echook "LLVM will be installed at [${LLVM_INSTALL}]"
 
 # Saving installation patch
 echo ${LLVM_INSTALL} > .install_path
@@ -244,7 +244,7 @@ else
 fi
 
 echo
-echoc "Installing LLVM/Clang..."
+echook "Installing LLVM/Clang..."
 
 WORKING_DIR=`pwd`
 cd ..
@@ -293,6 +293,7 @@ OPENMPRT_SRC=${BASE}/llvm_src/projects/openmp
 LIBCXX_SRC=${BASE}/llvm_src/projects/libcxx
 LIBCXXABI_SRC=${BASE}/llvm_src/projects/libcxxabi
 LIBUNWIND_SRC=${BASE}/llvm_src/projects/libunwind
+LLVM_BOOTSTRAP=${BASE}/llvm_bootstrap
 LLVM_BUILD=${BASE}/llvm_build
 mkdir -p ${LLVM_BUILD}
 
@@ -300,54 +301,73 @@ mkdir -p ${LLVM_BUILD}
 
 # LLVM Sources
 echo
-echoc "Obtaining LLVM OpenMP..."
+echook "Obtaining LLVM OpenMP..."
 git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC}
 
 # Runtime Sources
 echo
-echoc "Obtaining LLVM OpenMP Runtime..."
+echook "Obtaining LLVM OpenMP Runtime..."
 git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC}
 
 # Clang Sources
 echo
-echoc "Obtaining LLVM/Clang OpenMP..."
+echook "Obtaining LLVM/Clang OpenMP..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC}
 
 # Polly Sources
 echo
-echoc "Obtaining Polly..."
+echook "Obtaining Polly..."
 git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC}
 
 # Archer Sources
 echo
-echoc "Obtaining Archer..."
+echook "Obtaining Archer..."
 git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC}
 
 # OpenMP Runtime Sources
 echo
-echoc "Obtaining LLVM OpenMP Runtime..."
+echook "Obtaining LLVM OpenMP Runtime..."
 git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC}
 
 # libc++ Sources
 echo
-echoc "Obtaining LLVM libc++..."
+echook "Obtaining LLVM libc++..."
 git_clone_or_pull ${LIBCXX_REPO} ${LIBCXX_SRC}
 
 # libc++abi Sources
 echo
-echoc "Obtaining LLVM libc++abi..."
+echook "Obtaining LLVM libc++abi..."
 git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC}
 
 # libunwind Sources
 echo
-echoc "Obtaining LLVM libunwind..."
+echook "Obtaining LLVM libunwind..."
 git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC}
 
 # Compiling and installing LLVM
+echook "Bootstraping clang..."
+if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
+    echo "bootstrap already built!"
+else
+    mkdir -p "${LLVM_BOOTSTRAP}"
+    cd "${LLVM_BOOTSTRAP}"
+
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release "${LLVM_SRC}"
+    cd "${LLVM_BOOTSTRAP}/tools/clang/"
+    ${BUILD_CMD} -j${PROCS} -l${PROCS}
+    cd "${LLVM_BOOTSTRAP}"
+    ${BUILD_CMD} -j${PROCS} -l${PROCS}
+fi
+
+export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${LD_LIBRARY_PATH}"
+export PATH="${LLVM_BOOTSTRAP}/bin:${PATH}"
+
 echo
-echoc "Building LLVM/Clang..."
+echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}"\
+cmake -G "${BUILD_SYSTEM}"\
+ -D CMAKE_C_COMPILER=clang\
+ -D CMAKE_CXX_COMPILER=clang++\
  -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL}\
  -D LINK_POLLY_INTO_TOOLS:Bool=ON\
  -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp\
@@ -359,6 +379,9 @@ CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}"\
  -D CLANG_DEFAULT_CXX_STDLIB=libc++\
  ${LLVM_SRC}
 
+cd "${LLVM_BUILD}/tools/clang/"
+${BUILD_CMD} -j${PROCS} -l${PROCS}
+cd "${LLVM_BUILD}"
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 
@@ -368,12 +391,12 @@ export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
 echo
 echo "In order to use LLVM/Clang set the following path variables:"
 echo
-echoc "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
-echoc "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
+echook "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
+echook "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
 echo
 echo "or add the previous line to your"
 echo "shell start-up script such as \"~/.bashrc\"".
 echo
 echo
-echoc "LLVM installation completed."
+echook "LLVM installation completed."
 echo
