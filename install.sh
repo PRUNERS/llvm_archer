@@ -176,6 +176,7 @@ fi
 LLVM_INSTALL=/usr
 HTTP=false
 UPDATE=false
+BUILD_TYPE=Release
 GCC_TOOLCHAIN_PATH=
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
@@ -204,12 +205,21 @@ do
             UPDATE=true
             shift
             ;;
+        --debug)
+            BUILD_TYPE=Debug
+            shift
+            ;;
+        --reldebug)
+            BUILD_TYPE=RelWithDebInfo
+            shift
+            ;;
         --gcc-toolchain-path=*)
             GCC_TOOLCHAIN_PATH="-D GCC_INSTALL_PREFIX=${i#*=}"
             shift
             ;;
         *)
             echo "Usage: ./install.sh [--prefix=PREFIX[/usr] [--http (to use HTTP git url)]"
+            echo " 		[--debug] [--reldebug] [--update]"
             exit
             ;;
     esac
@@ -258,6 +268,7 @@ if [ "$HTTP" == "true" ]; then
     POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
+    LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
 else
@@ -267,6 +278,7 @@ else
     POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
+    LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
@@ -280,6 +292,7 @@ ARCHER_SRC=${BASE}/llvm_src/tools/archer
 OPENMPRT_SRC=${BASE}/llvm_src/projects/openmp
 LIBCXX_SRC=${BASE}/llvm_src/projects/libcxx
 LIBCXXABI_SRC=${BASE}/llvm_src/projects/libcxxabi
+LIBUNWIND_SRC=${BASE}/llvm_src/projects/libunwind
 LLVM_BUILD=${BASE}/llvm_build
 mkdir -p ${LLVM_BUILD}
 
@@ -325,11 +338,27 @@ echo
 echoc "Obtaining LLVM libc++abi..."
 git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC}
 
+# libunwind Sources
+echo
+echoc "Obtaining LLVM libunwind..."
+git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC}
+
 # Compiling and installing LLVM
 echo
 echoc "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LINK_POLLY_INTO_TOOLS:Bool=ON -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp -D LIBOMP_TSAN_SUPPORT=TRUE ${LLVM_SRC}
+CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}"\
+ -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL}\
+ -D LINK_POLLY_INTO_TOOLS:Bool=ON\
+ -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp\
+ -D LIBOMP_TSAN_SUPPORT=TRUE\
+ -D CMAKE_BUILD_TYPE=${BUILD_TYPE}\
+ -D LLVM_ENABLE_LIBCXX=ON\
+ -D LLVM_ENABLE_LIBCXXABI=ON\
+ -D LIBCXXABI_USE_LLVM_UNWINDER=ON\
+ -D CLANG_DEFAULT_CXX_STDLIB=libc++\
+ ${LLVM_SRC}
+
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 
