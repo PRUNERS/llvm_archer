@@ -346,21 +346,28 @@ git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC}
 
 # Compiling and installing LLVM
 echook "Bootstraping clang..."
+OLD_PATH=${PATH}
+OLD_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
 if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
     echo "bootstrap already built!"
 else
     mkdir -p "${LLVM_BOOTSTRAP}"
     cd "${LLVM_BOOTSTRAP}"
 
-    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release "${LLVM_SRC}"
-    cd "${LLVM_BOOTSTRAP}/tools/clang/"
-    ${BUILD_CMD} -j${PROCS} -l${PROCS}
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TOOL_ARCHER_BUILD=OFF -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}" 
     cd "${LLVM_BOOTSTRAP}"
     ${BUILD_CMD} -j${PROCS} -l${PROCS}
+
 fi
 
-export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${LD_LIBRARY_PATH}"
-export PATH="${LLVM_BOOTSTRAP}/bin:${PATH}"
+export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${OLD_LD_LIBRARY_PATH}"
+export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
+
+BOOST_FLAGS=
+if [ -n "$BOOST_ROOT" ]
+then
+  BOOST_FLAGS=-DBOOST_ROOT=$BOOST_ROOT -DBOOST_LIBRARYDIR=$BOOST_ROOT/lib -DBoost_NO_SYSTEM_PATHS=ON
+fi
 
 echo
 echook "Building LLVM/Clang..."
@@ -377,16 +384,15 @@ cmake -G "${BUILD_SYSTEM}"\
  -D LLVM_ENABLE_LIBCXXABI=ON\
  -D LIBCXXABI_USE_LLVM_UNWINDER=ON\
  -D CLANG_DEFAULT_CXX_STDLIB=libc++\
+ ${BOOST_FLAGS}\
  ${LLVM_SRC}
 
-cd "${LLVM_BUILD}/tools/clang/"
-${BUILD_CMD} -j${PROCS} -l${PROCS}
 cd "${LLVM_BUILD}"
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 
-export PATH=${LLVM_INSTALL}/bin:${PATH}
-export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
+export PATH=${LLVM_INSTALL}/bin:${OLD_PATH}
+export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${OLD_LD_LIBRARY_PATH}
 
 echo
 echo "In order to use LLVM/Clang set the following path variables:"
