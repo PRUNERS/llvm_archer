@@ -167,15 +167,16 @@ else
     myerrors=1
 fi
 
-#if [ $myerrors -gt 0 ]
-#then
-#    echoc Stop building ARCHER for missing requirements.
-#    exit 1
-#fi
+if [ $myerrors -gt 0 ]
+then
+    echoc Stop building ARCHER for missing requirements.
+    exit 1
+fi
 
 LLVM_INSTALL=/usr
 HTTP=false
 UPDATE=false
+BUILD_TYPE=Release
 GCC_TOOLCHAIN_PATH=
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
@@ -204,19 +205,28 @@ do
             UPDATE=true
             shift
             ;;
+        --debug)
+            BUILD_TYPE=Debug
+            shift
+            ;;
+        --reldebug)
+            BUILD_TYPE=RelWithDebInfo
+            shift
+            ;;
         --gcc-toolchain-path=*)
             GCC_TOOLCHAIN_PATH="-D GCC_INSTALL_PREFIX=${i#*=}"
             shift
             ;;
         *)
             echo "Usage: ./install.sh [--prefix=PREFIX[/usr] [--http (to use HTTP git url)]"
+            echo " 		[--debug] [--reldebug] [--update]"
             exit
             ;;
     esac
 done
 
 echo
-echoc "LLVM will be installed at [${LLVM_INSTALL}]"
+echook "LLVM will be installed at [${LLVM_INSTALL}]"
 
 # Saving installation patch
 echo ${LLVM_INSTALL} > .install_path
@@ -234,7 +244,7 @@ else
 fi
 
 echo
-echoc "Installing LLVM/Clang..."
+echook "Installing LLVM/Clang..."
 
 WORKING_DIR=`pwd`
 cd ..
@@ -256,6 +266,9 @@ if [ "$HTTP" == "true" ]; then
     CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
     LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
     POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
+    LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
+    LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
+    LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
 else
@@ -263,6 +276,9 @@ else
     CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
     LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
     POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
+    LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
+    LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
+    LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
@@ -274,6 +290,10 @@ LLVMRT_SRC=${BASE}/llvm_src/projects/compiler-rt
 POLLY_SRC=${LLVM_SRC}/tools/polly
 ARCHER_SRC=${BASE}/llvm_src/tools/archer
 OPENMPRT_SRC=${BASE}/llvm_src/projects/openmp
+LIBCXX_SRC=${BASE}/llvm_src/projects/libcxx
+LIBCXXABI_SRC=${BASE}/llvm_src/projects/libcxxabi
+LIBUNWIND_SRC=${BASE}/llvm_src/projects/libunwind
+LLVM_BOOTSTRAP=${BASE}/llvm_bootstrap
 LLVM_BUILD=${BASE}/llvm_build
 mkdir -p ${LLVM_BUILD}
 
@@ -281,54 +301,108 @@ mkdir -p ${LLVM_BUILD}
 
 # LLVM Sources
 echo
-echoc "Obtaining LLVM OpenMP..."
+echook "Obtaining LLVM OpenMP..."
 git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC}
 
 # Runtime Sources
 echo
-echoc "Obtaining LLVM OpenMP Runtime..."
+echook "Obtaining LLVM OpenMP Runtime..."
 git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC}
 
 # Clang Sources
 echo
-echoc "Obtaining LLVM/Clang OpenMP..."
+echook "Obtaining LLVM/Clang OpenMP..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC}
 
 # Polly Sources
 echo
-echoc "Obtaining Polly..."
+echook "Obtaining Polly..."
 git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC}
 
 # Archer Sources
 echo
-echoc "Obtaining Archer..."
+echook "Obtaining Archer..."
 git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC}
 
 # OpenMP Runtime Sources
 echo
-echoc "Obtaining LLVM OpenMP Runtime..."
+echook "Obtaining LLVM OpenMP Runtime..."
 git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC}
 
-# Compiling and installing LLVM
+# libc++ Sources
 echo
-echoc "Building LLVM/Clang..."
+echook "Obtaining LLVM libc++..."
+git_clone_or_pull ${LIBCXX_REPO} ${LIBCXX_SRC}
+
+# libc++abi Sources
+echo
+echook "Obtaining LLVM libc++abi..."
+git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC}
+
+# libunwind Sources
+echo
+echook "Obtaining LLVM libunwind..."
+git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC}
+
+# Compiling and installing LLVM
+echook "Bootstraping clang..."
+OLD_PATH=${PATH}
+OLD_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
+if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
+    echo "bootstrap already built!"
+else
+    mkdir -p "${LLVM_BOOTSTRAP}"
+    cd "${LLVM_BOOTSTRAP}"
+
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TOOL_ARCHER_BUILD=OFF -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}" 
+    cd "${LLVM_BOOTSTRAP}"
+    ${BUILD_CMD} -j${PROCS} -l${PROCS}
+
+fi
+
+export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${OLD_LD_LIBRARY_PATH}"
+export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
+
+BOOST_FLAGS=
+if [ -n "$BOOST_ROOT" ]
+then
+  BOOST_FLAGS=-DBOOST_ROOT=$BOOST_ROOT -DBOOST_LIBRARYDIR=$BOOST_ROOT/lib -DBoost_NO_SYSTEM_PATHS=ON
+fi
+
+echo
+echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} -D LINK_POLLY_INTO_TOOLS:Bool=ON -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp -D LIBOMP_TSAN_SUPPORT=TRUE ${LLVM_SRC}
+cmake -G "${BUILD_SYSTEM}"\
+ -D CMAKE_C_COMPILER=clang\
+ -D CMAKE_CXX_COMPILER=clang++\
+ -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL}\
+ -D LINK_POLLY_INTO_TOOLS:Bool=ON\
+ -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp\
+ -D LIBOMP_TSAN_SUPPORT=TRUE\
+ -D CMAKE_BUILD_TYPE=${BUILD_TYPE}\
+ -D LLVM_ENABLE_LIBCXX=ON\
+ -D LLVM_ENABLE_LIBCXXABI=ON\
+ -D LIBCXXABI_USE_LLVM_UNWINDER=ON\
+ -D CLANG_DEFAULT_CXX_STDLIB=libc++\
+ ${BOOST_FLAGS}\
+ ${LLVM_SRC}
+
+cd "${LLVM_BUILD}"
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
 ${BUILD_CMD} install
 
-export PATH=${LLVM_INSTALL}/bin:${PATH}
-export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}
+export PATH=${LLVM_INSTALL}/bin:${OLD_PATH}
+export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${OLD_LD_LIBRARY_PATH}
 
 echo
 echo "In order to use LLVM/Clang set the following path variables:"
 echo
-echoc "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
-echoc "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
+echook "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
+echook "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
 echo
 echo "or add the previous line to your"
 echo "shell start-up script such as \"~/.bashrc\"".
 echo
 echo
-echoc "LLVM installation completed."
+echook "LLVM installation completed."
 echo
