@@ -1,38 +1,38 @@
 #!/bin/bash
 set -e
-#set -x
+# set -x
 #
 # Copyright (c) 2015, Lawrence Livermore National Security, LLC.
-# 
+#
 # Produced at the Lawrence Livermore National Laboratory
-# 
+#
 # Written by Simone Atzeni (simone@cs.utah.edu), Ganesh Gopalakrishnan,
 # Zvonimir Rakamari\'c Dong H. Ahn, Ignacio Laguna, Martin Schulz, and
 # Gregory L. Lee
-# 
+#
 # LLNL-CODE-676696
-# 
+#
 # All rights reserved.
-# 
+#
 # This file is part of Archer. For details, see
 # https://github.com/soarlab/Archer. Please also read Archer/LICENSE.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 # Redistributions of source code must retain the above copyright notice,
 # this list of conditions and the disclaimer below.
-# 
+#
 # Redistributions in binary form must reproduce the above copyright
 # notice, this list of conditions and the disclaimer (as noted below) in
 # the documentation and/or other materials provided with the
 # distribution.
-# 
+#
 # Neither the name of the LLNS/LLNL nor the names of its contributors
 # may be used to endorse or promote products derived from this software
 # without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -75,12 +75,22 @@ then
         cd $2
         git checkout $BRANCH
     fi
+    if [ -n "$3" ]
+    then
+        cd $2
+        git checkout $3
+    fi
 else
     cd $2
     if [ -n "$BRANCH" ]
     then
         git checkout $BRANCH
     fi
+    if [ -n "$3" ]
+    then
+        cd $2
+        git checkout $3
+    fi    
     if [ "$UPDATE" == "false" ]
     then
         return
@@ -239,7 +249,7 @@ else
         PROCS=$(nprocs)
     else
         PROCS=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | tail -1)
-        PROCS=`expr $PROCS + 1`    
+        PROCS=`expr $PROCS + 1`
     fi
 fi
 
@@ -265,7 +275,8 @@ if [ "$HTTP" == "true" ]; then
     LLVM_REPO="-b archer https://github.com/PRUNER/llvm.git"
     CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
     LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
-    POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
+    # POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
+    POLLY_REPO="https://github.com/PRUNER/polly.git"
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
@@ -275,13 +286,21 @@ else
     LLVM_REPO="-b archer git@github.com:PRUNER/llvm.git"
     CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
     LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
-    POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
+    # POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
+    POLLY_REPO="git@github.com:PRUNER/polly.git"
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
 fi
+
+LLVM_RELEASE="tags/1.0.0"
+CLANG_RELEASE="tags/1.0.0"
+LLVMRT_RELEASE="tags/1.0.0"
+POLLY_RELEASE="tags/1.0.0"
+ARCHER_RELEASE="tags/1.0.0"
+OPENMPRT_RELEASE="tags/1.0.0"
 
 # LLVM installation directory
 LLVM_SRC=${BASE}/llvm_src
@@ -302,32 +321,32 @@ mkdir -p ${LLVM_BUILD}
 # LLVM Sources
 echo
 echook "Obtaining LLVM OpenMP..."
-git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC}
+git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC} ${LLVM_RELEASE}
 
 # Runtime Sources
 echo
 echook "Obtaining LLVM OpenMP Runtime..."
-git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC}
+git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
 
 # Clang Sources
 echo
 echook "Obtaining LLVM/Clang OpenMP..."
-git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC}
+git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Polly Sources
 echo
 echook "Obtaining Polly..."
-git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC}
+git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC} ${POLLY_RELEASE}
 
 # Archer Sources
 echo
 echook "Obtaining Archer..."
-git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC}
+git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
 
 # OpenMP Runtime Sources
 echo
 echook "Obtaining LLVM OpenMP Runtime..."
-git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC}
+git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC} ${OPENMPRT_RELEASE}
 
 # libc++ Sources
 echo
@@ -354,7 +373,7 @@ else
     mkdir -p "${LLVM_BOOTSTRAP}"
     cd "${LLVM_BOOTSTRAP}"
 
-    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TOOL_ARCHER_BUILD=OFF -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}" 
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TOOL_ARCHER_BUILD=OFF -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
     ${BUILD_CMD} -j${PROCS} -l${PROCS}
 
