@@ -88,7 +88,6 @@ else
     fi
     if [ -n "$3" ]
     then
-        cd $2
         git checkout $3
     fi    
     if [ "$UPDATE" == "false" ]
@@ -135,7 +134,7 @@ fi
 if mycmake=$(which cmake 2>/dev/null)
 then
 #    mycmakeversion=$($mycmake --version 2>&1 | head -n1 | sed -e 's/(.*)//g' -e 's/\[.*\]//g' -e 's/  */ /g')
-    if check_version 2.8.12.2 $mycmake
+    if check_version 3.4.3 $mycmake
     then
         echook Found cmake at $mycmake version $toolversion [OK]
     else
@@ -246,12 +245,14 @@ if [ "$(uname)" == "Darwin" ]; then
     PROCS=$(sysctl -a | grep machdep.cpu | grep core_count | awk -F " " '{ print $2 }')
 else
     if ! type "nproc" > /dev/null; then
-        PROCS=$(nprocs)
+        PROCS=$(nproc --all)
     else
         PROCS=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | tail -1)
         PROCS=`expr $PROCS + 1`
     fi
 fi
+#fair share:
+PROCS=$[$PROCS/2]
 
 echo
 echook "Installing LLVM/Clang..."
