@@ -138,7 +138,7 @@ then
     then
         echook Found cmake at $mycmake version $toolversion [OK]
     else
-        echoc Found cmake at $mycmake version $toolversion , but version 2.8.12.2 or newer required [OK]
+        echoc Found cmake at $mycmake version $toolversion , but version 3.4.3 or newer required [ERROR]
         myerrors=1
     fi
 else
@@ -153,7 +153,7 @@ then
     then
         echook Found gcc at $mygcc version $toolversion [OK]
     else
-        echoc Found gcc at $mygcc version $toolversion , but version 4.7 or newer required [OK]
+        echoc Found gcc at $mygcc version $toolversion , but version 4.7 or newer required [ERROR]
         myerrors=1
     fi
 else
@@ -168,7 +168,7 @@ then
     then
         echook Found python at $mypython version $toolversion [OK]
     else
-        echoc Found python at $mypython version $toolversion, but version 2.7 or newer required [OK]
+        echoc Found python at $mypython version $toolversion, but version 2.7 or newer required [ERROR]
         myerrors=1
     fi
 else
