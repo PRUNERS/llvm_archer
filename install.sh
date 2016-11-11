@@ -89,7 +89,7 @@ else
     if [ -n "$3" ]
     then
         git checkout $3
-    fi    
+    fi
     if [ "$UPDATE" == "false" ]
     then
         return
@@ -282,7 +282,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
-    OPENMPRT_REPO="-b annotations https://github.com/PRUNER/openmp.git"
+    OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
     LLVM_REPO="-b archer git@github.com:PRUNER/llvm.git"
     CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
@@ -293,7 +293,7 @@ else
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
-    OPENMPRT_REPO="-b annotations git@github.com:PRUNER/openmp.git"
+    OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
 fi
 
 LLVM_RELEASE="tags/1.0.0"
