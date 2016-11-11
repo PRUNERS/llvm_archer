@@ -277,7 +277,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
-    ARCHER_REPO="https://github.com/PRUNER/archer.git"
+    ARCHER_REPO="-b serialbl https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
@@ -286,7 +286,7 @@ else
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
-    ARCHER_REPO="git@github.com:PRUNER/archer.git"
+    ARCHER_REPO="-b serialbl git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
 fi
 
