@@ -267,28 +267,22 @@ cd $BASE
 LLVM_REPO=""
 CLANG_REPO=""
 LLVMRT_REPO=""
-POLLY_REPO=""
 LLVM_COMMIT=""
 LLVMRT_COMMIT=""
 CLANG_COMMIT=""
-POLLY_COMMIT=""
 if [ "$HTTP" == "true" ]; then
-    LLVM_REPO="-b archer https://github.com/PRUNER/llvm.git"
-    CLANG_REPO="-b archer https://github.com/PRUNER/clang.git"
-    LLVMRT_REPO="https://github.com/PRUNER/compiler-rt.git"
-    # POLLY_REPO="-b 4c6b282 https://github.com/llvm-mirror/polly.git"
-    POLLY_REPO="https://github.com/PRUNER/polly.git"
+    LLVM_REPO="https://github.com/llvm-mirror/llvm.git"
+    CLANG_REPO="https://github.com/llvm-mirror/clang.git"
+    LLVMRT_REPO="https://github.com/llvm-mirror/compiler-rt.git"
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
-    LLVM_REPO="-b archer git@github.com:PRUNER/llvm.git"
-    CLANG_REPO="-b archer git@github.com:PRUNER/clang.git"
-    LLVMRT_REPO="git@github.com:PRUNER/compiler-rt.git"
-    # POLLY_REPO="-b 4c6b282 git@github.com:llvm-mirror/polly.git"
-    POLLY_REPO="git@github.com:PRUNER/polly.git"
+    LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
+    CLANG_REPO="git@github.com:llvm-mirror/clang.git"
+    LLVMRT_REPO="git@github.com:llvm-mirror/compiler-rt.git"
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
@@ -296,18 +290,16 @@ else
     OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
 fi
 
-LLVM_RELEASE="tags/1.0.0"
-CLANG_RELEASE="tags/1.0.0"
-LLVMRT_RELEASE="tags/1.0.0"
-POLLY_RELEASE="tags/1.0.0"
-ARCHER_RELEASE="tags/1.0.0"
-OPENMPRT_RELEASE="tags/1.0.0"
+LLVM_RELEASE= # "tags/1.0.0"
+CLANG_RELEASE= # "tags/1.0.0"
+LLVMRT_RELEASE= # "tags/1.0.0"
+ARCHER_RELEASE= # "tags/1.0.0"
+OPENMPRT_RELEASE= # "tags/1.0.0"
 
 # LLVM installation directory
 LLVM_SRC=${BASE}/llvm_src
 CLANG_SRC=${BASE}/llvm_src/tools/clang
 LLVMRT_SRC=${BASE}/llvm_src/projects/compiler-rt
-POLLY_SRC=${LLVM_SRC}/tools/polly
 ARCHER_SRC=${BASE}/llvm_src/tools/archer
 OPENMPRT_SRC=${BASE}/llvm_src/projects/openmp
 LIBCXX_SRC=${BASE}/llvm_src/projects/libcxx
@@ -333,11 +325,6 @@ git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
 echo
 echook "Obtaining LLVM/Clang OpenMP..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
-
-# Polly Sources
-echo
-echook "Obtaining Polly..."
-git_clone_or_pull ${POLLY_REPO} ${POLLY_SRC} ${POLLY_RELEASE}
 
 # Archer Sources
 echo
@@ -396,7 +383,6 @@ cmake -G "${BUILD_SYSTEM}"\
  -D CMAKE_C_COMPILER=clang\
  -D CMAKE_CXX_COMPILER=clang++\
  -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL}\
- -D LINK_POLLY_INTO_TOOLS:Bool=ON\
  -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp\
  -D LIBOMP_TSAN_SUPPORT=TRUE\
  -D CMAKE_BUILD_TYPE=${BUILD_TYPE}\
