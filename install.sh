@@ -330,6 +330,8 @@ git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 echo
 echook "Obtaining Archer..."
 git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+# Get tests for Archer
+cd ${ARCHER_SRC} && git submodule init && git submodule update
 
 # OpenMP Runtime Sources
 echo
@@ -402,7 +404,7 @@ export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${OLD_LD_LIBRARY_PATH}
 echo
 echo "In order to use LLVM/Clang set the following path variables:"
 echo
-echook "export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
+echook "export PATH=${LLVM_INSTALL}/bin:\${PATH}"
 echook "export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
 echo
 echo "or add the previous line to your"
