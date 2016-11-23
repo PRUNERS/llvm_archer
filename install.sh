@@ -185,8 +185,10 @@ fi
 LLVM_INSTALL=/usr
 HTTP=false
 UPDATE=false
+TSAN_OMPT=false
 BUILD_TYPE=Release
 GCC_TOOLCHAIN_PATH=
+TSAN_OMPT_SUPPORT="-D LIBOMP_TSAN_SUPPORT=TRUE"
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
 if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
@@ -214,6 +216,10 @@ do
             UPDATE=true
             shift
             ;;
+        --tsan-ompt-tool)
+            TSAN_OMPT=true
+            shift
+            ;;
         --debug)
             BUILD_TYPE=Debug
             shift
@@ -228,7 +234,8 @@ do
             ;;
         *)
             echo "Usage: ./install.sh [--prefix=PREFIX[/usr] [--http (to use HTTP git url)]"
-            echo " 		[--debug] [--reldebug] [--update]"
+            echo " 		[--debug] [--reldebug] [--update] [--tsan-ompt-tool]
+            "
             exit
             ;;
     esac
@@ -277,7 +284,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
-    ARCHER_REPO="-b serialbl https://github.com/PRUNER/archer.git"
+    ARCHER_REPO="https://github.com/PRUNER/archer.git"
     OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
@@ -286,8 +293,12 @@ else
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
-    ARCHER_REPO="-b serialbl git@github.com:PRUNER/archer.git"
+    ARCHER_REPO="git@github.com:PRUNER/archer.git"
     OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
+fi
+
+if [  "$TSAN_OMPT" == "true" ]; then
+    TSAN_OMPT_SUPPORT=""
 fi
 
 LLVM_RELEASE= # "tags/1.0.0"
@@ -327,11 +338,11 @@ echook "Obtaining LLVM/Clang OpenMP..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Archer Sources
-echo
-echook "Obtaining Archer..."
-git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
-# Get tests for Archer
-cd ${ARCHER_SRC} && git submodule init && git submodule update
+# echo
+# echook "Obtaining Archer..."
+# git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+# # Get tests for Archer
+# cd ${ARCHER_SRC} && git submodule init && git submodule update
 
 # OpenMP Runtime Sources
 echo
@@ -363,7 +374,7 @@ else
     mkdir -p "${LLVM_BOOTSTRAP}"
     cd "${LLVM_BOOTSTRAP}"
 
-    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TOOL_ARCHER_BUILD=OFF -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}"
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
     ${BUILD_CMD} -j${PROCS} -l${PROCS}
 
@@ -391,6 +402,7 @@ cmake -G "${BUILD_SYSTEM}" \
  -D LLVM_ENABLE_LIBCXX=ON \
  -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
  -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
+ ${TSAN_OMPT_SUPPORT} \
  ${BOOST_FLAGS} \
  ${LLVM_SRC}
 
