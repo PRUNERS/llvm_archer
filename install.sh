@@ -188,7 +188,7 @@ UPDATE=false
 TSAN_OMPT=false
 BUILD_TYPE=Release
 GCC_TOOLCHAIN_PATH=
-TSAN_OMPT_SUPPORT="-D LIBOMP_TSAN_SUPPORT=TRUE"
+TSAN_OMPT_SUPPORT="-D LIBOMP_ANNOTATION_TSAN_SUPPORT=1"
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
 if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
@@ -324,24 +324,24 @@ mkdir -p ${LLVM_BUILD}
 
 # LLVM Sources
 echo
-echook "Obtaining LLVM OpenMP..."
+echook "Obtaining LLVM..."
 git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC} ${LLVM_RELEASE}
 
 # Runtime Sources
 echo
-echook "Obtaining LLVM OpenMP Runtime..."
+echook "Obtaining LLVM Runtime..."
 git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
 
 # Clang Sources
 echo
-echook "Obtaining LLVM/Clang OpenMP..."
+echook "Obtaining LLVM/Clang..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Archer Sources
-# echo
-# echook "Obtaining Archer..."
-# git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
-# # Get tests for Archer
+echo
+echook "Obtaining Archer..."
+git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+# Get tests for Archer
 # cd ${ARCHER_SRC} && git submodule init && git submodule update
 
 # OpenMP Runtime Sources
