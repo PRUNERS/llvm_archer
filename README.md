@@ -73,7 +73,7 @@ Build Clang/LLVM 3.9 with ARCHER support by running `install.sh`:
     export LLVM_INSTALL=$HOME/usr
     ./install.sh --prefix=$LLVM_INSTALL [default: --prefix=/usr]
 
-The installation script will create a folder called **LLVM** at the same
+The installation script will create a folder called *LLVM* at the same
 level of the *llvm\\<sub>archer</sub>* directory and install LLVM into
 *LLVM\\<sub>INSTALL</sub>*.
 
