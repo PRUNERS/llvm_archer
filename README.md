@@ -10,7 +10,7 @@
 <li><a href="#sec-4-1">4.1. Automatic Building</a></li>
 </ul>
 </li>
-<li><a href="#sec-5">5. Sponsor</a></li>
+<li><a href="#sec-5">5. Sponsors</a></li>
 </ul>
 </div>
 </div>
@@ -80,8 +80,6 @@ Please set the following path variables:
 To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
-# Sponsor<a id="sec-5" name="sec-5"></a>
+# Sponsors<a id="sec-5" name="sec-5"></a>
 
-<img src="resources/images/uofu_logo.png" hspace="5" vspace="5" height="35%" width="35%" alt="UofU Logo" title="University of Utah" align="left" />
-
-<img src="resources/images/llnl_logo.png" hspace="5" vspace="5" height="50%" width="50%" alt="LLNL Logo" title="Lawrence Livermore National Laboratory" align="right" />
+<img src="resources/images/uofu_logo.png" hspace="15" vspace="5" height="23%" width="23%" alt="UofU Logo" title="University of Utah" style="float:left" /> <img src="resources/images/llnl_logo.png" hspace="70" vspace="5" height="30%" width="30%" alt="LLNL Logo" title="Lawrence Livermore National Laboratory" style="float:center" /> <img src="resources/images/rwthaachen_logo.png" hspace="15" vspace="5" height="23%" width="23%" alt="RWTH AACHEN Logo" title="RWTH AACHEN University" style="float:left" />
