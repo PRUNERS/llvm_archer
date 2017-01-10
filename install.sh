@@ -183,12 +183,13 @@ then
 fi
 
 LLVM_INSTALL=/usr
+RELEASE=39
 HTTP=false
 UPDATE=false
-TSAN_OMPT=false
+TSAN_OMPT=true
 BUILD_TYPE=Release
 GCC_TOOLCHAIN_PATH=
-TSAN_OMPT_SUPPORT="-D LIBOMP_ANNOTATION_TSAN_SUPPORT=1"
+TSAN_OMP_SUPPORT="-D LIBOMP_ANNOTATION_TSAN_SUPPORT=1"
 BUILD_CMD=ninja
 BUILD_SYSTEM="Ninja"
 if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
@@ -206,6 +207,10 @@ do
             ;;
         --build-system=*)
             BUILD_SYSTEM="${i#*=}"
+            shift
+            ;;
+        --release=*)
+            RELEASE="${i#*=}"
             shift
             ;;
         --http)
@@ -285,7 +290,8 @@ if [ "$HTTP" == "true" ]; then
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
-    OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
+    # OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
+    OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
     CLANG_REPO="git@github.com:llvm-mirror/clang.git"
@@ -294,18 +300,31 @@ else
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
-    OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
+    # OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
+    OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
 fi
 
 if [  "$TSAN_OMPT" == "true" ]; then
-    TSAN_OMPT_SUPPORT=""
+    TSAN_OMP_SUPPORT=""
 fi
 
-LLVM_RELEASE= # "tags/1.0.0"
-CLANG_RELEASE= # "tags/1.0.0"
-LLVMRT_RELEASE= # "tags/1.0.0"
-ARCHER_RELEASE= # "tags/1.0.0"
-OPENMPRT_RELEASE= # "tags/1.0.0"
+# LLVM_RELEASE="release_39"
+# CLANG_RELEASE="release_39"
+# LLVMRT_RELEASE="release_39"
+# LIBCXX_RELEASE="release_39"
+# LIBCXXABI_RELEASE="release_39"
+# LIBUNWIND_RELEASE="release_39"
+# ARCHER_RELEASE= # ""
+# OPENMPRT_RELEASE= # "release_39"
+
+LLVM_RELEASE=
+CLANG_RELEASE=
+LLVMRT_RELEASE=
+LIBCXX_RELEASE=
+LIBCXXABI_RELEASE=
+LIBUNWIND_RELEASE=
+ARCHER_RELEASE=
+OPENMPRT_RELEASE=
 
 # LLVM installation directory
 LLVM_SRC=${BASE}/llvm_src
@@ -338,9 +357,9 @@ echook "Obtaining LLVM/Clang..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Archer Sources
-echo
-echook "Obtaining Archer..."
-git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+# echo
+# echook "Obtaining Archer..."
+# git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
 # Get tests for Archer
 # cd ${ARCHER_SRC} && git submodule init && git submodule update
 
@@ -402,7 +421,7 @@ cmake -G "${BUILD_SYSTEM}" \
  -D LLVM_ENABLE_LIBCXX=ON \
  -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
  -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
- ${TSAN_OMPT_SUPPORT} \
+ ${TSAN_OMP_SUPPORT} \
  ${BOOST_FLAGS} \
  ${LLVM_SRC}
 
