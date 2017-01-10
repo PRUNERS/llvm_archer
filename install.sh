@@ -6,9 +6,9 @@ set -e
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
-# Written by Simone Atzeni (simone@cs.utah.edu), Ganesh Gopalakrishnan,
-# Zvonimir Rakamari\'c Dong H. Ahn, Ignacio Laguna, Martin Schulz, and
-# Gregory L. Lee
+# Written by Simone Atzeni, Joachim Protze, Jonas Hahnfeld, Ganesh
+# Gopalakrishnan, Zvonimir Rakamari\'c Dong H. Ahn, Ignacio Laguna,
+# Martin Schulz, and Gregory L. Lee
 #
 # LLNL-CODE-676696
 #
@@ -120,6 +120,117 @@ done
 return 0
 }
 
+BASE=
+LLVM_INSTALL=/usr
+RELEASE="39"
+# ARCHER_RELEASE="10"
+ARCHER_RELEASE=
+HTTP=false
+UPDATE=false
+TSAN_OMPT=true
+BUILD_TYPE=Release
+GCC_TOOLCHAIN_PATH=
+BUILD_CMD=ninja
+BUILD_SYSTEM="Ninja"
+if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
+    BUILD_CMD=make
+    BUILD_SYSTEM="Unix Makefiles"
+fi
+
+if [ $# -eq 0 ]
+then
+    echo "Usage"
+    echo
+    echo "  ./install.sh [options] <path-to-installation-folder>"
+    echo
+    echo "Run './install.sh --help' for more information."
+    echo
+    exit
+fi
+
+# CC and CXX
+for i in "$@"
+do
+    case $i in
+        --prefix=*)
+            LLVM_INSTALL="${i#*=}"
+            shift
+            ;;
+        --build-system=*)
+            BUILD_SYSTEM="${i#*=}"
+            shift
+            ;;
+        --release=*)
+            RELEASE="${i#*=}"
+            shift
+            ;;
+        --http)
+            HTTP=true
+            shift
+            ;;
+        --update)
+            UPDATE=true
+            shift
+            ;;
+        --omp-tsan-support)
+            TSAN_OMPT=false
+            shift
+            ;;
+        --build-type=*)
+            BUILD_TYPE="${i#*=}"
+            shift
+            ;;
+        --gcc-toolchain-path=*)
+            GCC_TOOLCHAIN_PATH="-D GCC_INSTALL_PREFIX=${i#*=}"
+            shift
+            ;;
+        --help)
+            echo "Usage"
+            echo
+            echo "  ./install.sh [options]"
+            echo
+            echo "Options"
+            echo "  --prefix=<value>             = Specify an installation path."
+            echo "  --build-system=<value>       = Specify a build system generator. Please run"
+            echo "                                 'man cmake-generators' for a list of generators"
+            echo "                                 available for this platform."
+            echo "  --release=<value>            = Specify the release version of Clang/LLVM that"
+            echo "                                 will be installed (>= 39)."
+            echo "  --http                       = Enables GitHub web url in case SSH key and"
+            echo "                                 passphrase are not set in the GitHub account."
+            echo "  --update                     = Update previous building."
+            echo "  --omp-tsan-support           = Enabled ThreadSanitizer support in official"
+            echo "                                 LLVM OpenMP runtime, if not set an LLVM OpenMP"
+            echo "                                 Runtime with OMPT support will be used."
+            echo "  --build-type=<value>         = Specify the type of build. Accepted values"
+            echo "                                 are Release (default), Debug or RelWithDebInfo."
+            echo "  --gcc-toolchain-path=<value> = Specify the GCC toolchain path."
+            echo
+            shift
+            exit
+            ;;
+        *)
+            BASE=${i#*=}
+            shift
+            ;;
+    esac
+done
+
+if [ -z "$BASE" ];
+then
+    echo
+    echo "Error: Specify a directory to download and build the software."
+    echo
+    exit
+fi
+
+if [[ ( "${BUILD_TYPE}" != "Release" ) && ( "${BUILD_TYPE}" != "Debug" ) && ( "${BUILD_TYPE}" != "RelWithDebInfo" ) ]]; then
+    echo
+    echo "Error: Accepted values for the build type are Release, Debug, or RelWithDebInfo."
+    echo
+    exit
+fi
+
 # Check requirements
 myerrors=0
 toolversion=0
@@ -182,75 +293,11 @@ then
     exit 1
 fi
 
-LLVM_INSTALL=/usr
-RELEASE=39
-HTTP=false
-UPDATE=false
-TSAN_OMPT=true
-BUILD_TYPE=Release
-GCC_TOOLCHAIN_PATH=
-TSAN_OMP_SUPPORT="-D LIBOMP_ANNOTATION_TSAN_SUPPORT=1"
-BUILD_CMD=ninja
-BUILD_SYSTEM="Ninja"
-if ! command_loc="$(type -p "$BUILD_CMD")" || [  -z "$command_loc" ]; then
-    BUILD_CMD=make
-    BUILD_SYSTEM="Unix Makefiles"
-fi
-
-# CC and CXX
-for i in "$@"
-do
-    case $i in
-        --prefix=*)
-            LLVM_INSTALL="${i#*=}"
-            shift
-            ;;
-        --build-system=*)
-            BUILD_SYSTEM="${i#*=}"
-            shift
-            ;;
-        --release=*)
-            RELEASE="${i#*=}"
-            shift
-            ;;
-        --http)
-            HTTP=true
-            shift
-            ;;
-        --update)
-            UPDATE=true
-            shift
-            ;;
-        --tsan-ompt-tool)
-            TSAN_OMPT=true
-            shift
-            ;;
-        --debug)
-            BUILD_TYPE=Debug
-            shift
-            ;;
-        --reldebug)
-            BUILD_TYPE=RelWithDebInfo
-            shift
-            ;;
-        --gcc-toolchain-path=*)
-            GCC_TOOLCHAIN_PATH="-D GCC_INSTALL_PREFIX=${i#*=}"
-            shift
-            ;;
-        *)
-            echo "Usage: ./install.sh [--prefix=PREFIX[/usr] [--http (to use HTTP git url)]"
-            echo " 		[--debug] [--reldebug] [--update] [--tsan-ompt-tool]
-            "
-            exit
-            ;;
-    esac
-done
-
 echo
 echook "LLVM will be installed at [${LLVM_INSTALL}]"
 
 # Saving installation patch
-echo ${LLVM_INSTALL} > .install_path
+# echo ${LLVM_INSTALL} > .install_path
 
 # Get the number of cores to speed up make process
 if [ "$(uname)" == "Darwin" ]; then
@@ -271,9 +318,9 @@ echook "Installing LLVM/Clang..."
 
 WORKING_DIR=`pwd`
 cd ..
-BASE=`pwd`/LLVM
+BASE=`realpath ${BASE}`
 mkdir -p ${BASE}
-cd $BASE
+cd ${BASE}
 
 # Software Repositories
 LLVM_REPO=""
@@ -290,8 +337,11 @@ if [ "$HTTP" == "true" ]; then
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNER/archer.git"
-    # OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
-    OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
+    if [ "$TSAN_OMPT" == "true" ]; then
+        OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
+    else
+        OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
+    fi
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
     CLANG_REPO="git@github.com:llvm-mirror/clang.git"
@@ -300,31 +350,38 @@ else
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNER/archer.git"
-    # OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
-    OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
+    if [  "$TSAN_OMPT" == "true" ]; then
+        OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
+    else
+        OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
+    fi
 fi
 
-if [  "$TSAN_OMPT" == "true" ]; then
-    TSAN_OMP_SUPPORT=""
+if [ "$RELEASE" == "dev" ]; then
+    LLVM_RELEASE=
+    CLANG_RELEASE=
+    LLVMRT_RELEASE=
+    LIBCXX_RELEASE=
+    LIBCXXABI_RELEASE=
+    LIBUNWIND_RELEASE=
+    if [  "$TSAN_OMPT" == "true" ]; then
+        OPENMPRT_RELEASE=align-to-tr
+    else
+        OPENMPRT_RELEASE="release_"$RELEASE
+    fi
+else
+    LLVM_RELEASE="release_"$RELEASE
+    CLANG_RELEASE="release_"$RELEASE
+    LLVMRT_RELEASE="release_"$RELEASE
+    LIBCXX_RELEASE="release_"$RELEASE
+    LIBCXXABI_RELEASE="release_"$RELEASE
+    LIBUNWIND_RELEASE="release_"$RELEASE
+    if [  "$TSAN_OMPT" == "true" ]; then
+        OPENMPRT_RELEASE=align-to-tr
+    else
+        OPENMPRT_RELEASE="release_"$RELEASE
+    fi
 fi
-
-# LLVM_RELEASE="release_39"
-# CLANG_RELEASE="release_39"
-# LLVMRT_RELEASE="release_39"
-# LIBCXX_RELEASE="release_39"
-# LIBCXXABI_RELEASE="release_39"
-# LIBUNWIND_RELEASE="release_39"
-# ARCHER_RELEASE= # ""
-# OPENMPRT_RELEASE= # "release_39"
-
-LLVM_RELEASE=
-CLANG_RELEASE=
-LLVMRT_RELEASE=
-LIBCXX_RELEASE=
-LIBCXXABI_RELEASE=
-LIBUNWIND_RELEASE=
-ARCHER_RELEASE=
-OPENMPRT_RELEASE=
 
 # LLVM installation directory
 LLVM_SRC=${BASE}/llvm_src
@@ -346,22 +403,20 @@ echo
 echook "Obtaining LLVM..."
 git_clone_or_pull ${LLVM_REPO} ${LLVM_SRC} ${LLVM_RELEASE}
 
-# Runtime Sources
-echo
-echook "Obtaining LLVM Runtime..."
-git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
-
 # Clang Sources
 echo
 echook "Obtaining LLVM/Clang..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Archer Sources
-# echo
-# echook "Obtaining Archer..."
-# git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
-# Get tests for Archer
-# cd ${ARCHER_SRC} && git submodule init && git submodule update
+echo
+echook "Obtaining Archer..."
+git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+
+# Runtime Sources
+echo
+echook "Obtaining LLVM Runtime..."
+git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
 
 # OpenMP Runtime Sources
 echo
@@ -371,17 +426,17 @@ git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC} ${OPENMPRT_RELEASE}
 # libc++ Sources
 echo
 echook "Obtaining LLVM libc++..."
-git_clone_or_pull ${LIBCXX_REPO} ${LIBCXX_SRC}
+git_clone_or_pull ${LIBCXX_REPO} ${LIBCXX_SRC} ${LIBCXX_RELEASE}
 
 # libc++abi Sources
 echo
 echook "Obtaining LLVM libc++abi..."
-git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC}
+git_clone_or_pull ${LIBCXXABI_REPO} ${LIBCXXABI_SRC} ${LIBCXXABI_RELEASE}
 
 # libunwind Sources
 echo
 echook "Obtaining LLVM libunwind..."
-git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC}
+git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC} ${LIBUNWIND_RELEASE}
 
 # Compiling and installing LLVM
 echook "Bootstraping clang..."
@@ -390,10 +445,13 @@ OLD_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
 if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
     echo "bootstrap already built!"
 else
-    mkdir -p "${LLVM_BOOTSTRAP}"
-    cd "${LLVM_BOOTSTRAP}"
-
-    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=Native "${LLVM_SRC}"
+    mkdir -p "${LLVM_BOOTSTRAP}" && cd "${LLVM_BOOTSTRAP}"
+    CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DLLVM_TARGETS_TO_BUILD=Native \
+      -DLLVM_TOOL_ARCHER_BUILD=OFF \
+      ${GCC_TOOLCHAIN_PATH} \
+      "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
     ${BUILD_CMD} -j${PROCS} -l${PROCS}
 
@@ -402,31 +460,44 @@ fi
 export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${OLD_LD_LIBRARY_PATH}"
 export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
 
-BOOST_FLAGS=
-if [ -n "$BOOST_ROOT" ]
-then
-  BOOST_FLAGS="-DBOOST_ROOT=$BOOST_ROOT -DBOOST_LIBRARYDIR=$BOOST_ROOT/lib -DBoost_NO_SYSTEM_PATHS=ON"
-fi
-
 echo
 echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-cmake -G "${BUILD_SYSTEM}" \
- -D CMAKE_C_COMPILER=clang \
- -D CMAKE_CXX_COMPILER=clang++ \
- -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
- -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
- -D LIBOMP_TSAN_SUPPORT=TRUE \
- -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
- -D LLVM_ENABLE_LIBCXX=ON \
- -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
- -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
- ${TSAN_OMP_SUPPORT} \
- ${BOOST_FLAGS} \
- ${LLVM_SRC}
+if [  "$TSAN_OMPT" == "true" ]; then
+    cmake -G "${BUILD_SYSTEM}" \
+          -D CMAKE_C_COMPILER=clang \
+          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
+          -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
+          -D LLVM_ENABLE_LIBCXX=ON \
+          -D LLVM_ENABLE_LIBCXXABI=ON \
+          -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
+          -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
+          -D LIBOMP_OMPT_SUPPORT=on \
+          -D LIBOMP_OMPT_BLAME=on \
+          -D LIBOMP_OMPT_TRACE=on \
+          ${GCC_TOOLCHAIN_PATH} \
+          ${LLVM_SRC}
+else
+    cmake -G "${BUILD_SYSTEM}" \
+          -D CMAKE_C_COMPILER=clang \
+          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
+          -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
+          -D LLVM_ENABLE_LIBCXX=ON \
+          -D LLVM_ENABLE_LIBCXXABI=ON \
+          -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
+          -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
+          -D LIBOMP_TSAN_SUPPORT=TRUE \
+          ${GCC_TOOLCHAIN_PATH} \
+          ${LLVM_SRC}
+fi
 
 cd "${LLVM_BUILD}"
 ${BUILD_CMD} -j${PROCS} -l${PROCS}
+# ${BUILD_CMD} check-libarcher
 ${BUILD_CMD} install
 
 export PATH=${LLVM_INSTALL}/bin:${OLD_PATH}

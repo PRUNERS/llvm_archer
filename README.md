@@ -77,12 +77,6 @@ The installation script will create a folder called *LLVM* at the same
 level of the *llvm\_archer* directory and install LLVM into
 *LLVM\_INSTALL*.
 
-In case your GCC is not installed in a standard path you need to
-specify the GCC toolchain path for LLVM/Clang using the flag
-*&#x2013;gcc-toolchain-path*:
-
-    ./install.sh --prefix=$LLVM_INSTALL --gcc-toolchain-path=gcc_toolchain_path
-
 Once the installation completes, you need to setup your environement
 to allow ARCHER to work correctly.
 
@@ -95,6 +89,34 @@ To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
 ## Options<a id="sec-4-3" name="sec-4-3"></a>
+
+Running the command:
+
+    ./install --help
+
+shows the options available for building and installing Clang/LLVM
+with ARCHER support.
+
+    Usage
+
+      ./install.sh [options]
+
+    Options
+      --prefix=<value>             = Specify an installation path.
+      --build-system=<value>       = Specify a build system generator. Please run
+                                     'man cmake-generators' for a list of generators
+                                     available for this platform.
+      --release=<value>            = Specify the release version of Clang/LLVM that
+                                     will be installed (>= 39).
+      --http                       = Enables GitHub web url in case SSH key and
+                                     passphrase are not set in the GitHub account.
+      --update                     = Update previous building.
+      --omp-tsan-support           = Enabled ThreadSanitizer support in official
+                                     LLVM OpenMP runtime, if not set an LLVM OpenMP
+                                     Runtime with OMPT support will be used.
+      --build-type=<value>         = Specify the type of build. Accepted values
+                                     are Release (default), Debug or RelWithDebInfo.
+      --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
 
 # Contacts and Support<a id="sec-5" name="sec-5"></a>
 
