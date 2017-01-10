@@ -7,7 +7,9 @@
 <li><a href="#sec-3">3. Prerequisites</a></li>
 <li><a href="#sec-4">4. Installation</a>
 <ul>
-<li><a href="#sec-4-1">4.1. Automatic Building</a></li>
+<li><a href="#sec-4-1">4.1. Manual Building</a></li>
+<li><a href="#sec-4-2">4.2. Automatic Building</a></li>
+<li><a href="#sec-4-3">4.3. Options</a></li>
 </ul>
 </li>
 <li><a href="#sec-5">5. Contacts and Support</a></li>
@@ -49,42 +51,50 @@ development at <https://github.com/OpenMPToolsInterface/LLVM-openmp>
 
 # Installation<a id="sec-4" name="sec-4"></a>
 
-ARCHER has been developed under LLVM 3.8 (for
-more information visit <http://llvm.org>).
+ARCHER has been developed under LLVM 3.9 (for more information visit
+<http://llvm.org>).
 
-## Automatic Building<a id="sec-4-1" name="sec-4-1"></a>
+## Manual Building<a id="sec-4-1" name="sec-4-1"></a>
 
-ARCHER comes as an LLVM tool, in order to compile it we must compile
-the entire LLVM/Clang infrastructure. ARCHER developers provide a
-patched LLVM/Clang version based on the main LLVM/Clang trunk.
+For a manual building please visit the GitHub page
+<https://github.com/PRUNER/archer>.
 
-In order to obtain and build LLVM/Clang with ARCHER execute the
-following commands in your command-line (instructions are based on
-bash shell, GCC-4.9.3 version and Ninja build system).
+## Automatic Building<a id="sec-4-2" name="sec-4-2"></a>
 
-Build ARCHER by running `install.sh`:
+ARCHER comes both as standalone and LLVM tool.
 
-    ./install.sh --prefix=llvm_install_path [default: --prefix=/usr]
+In order to obtain and automatically build Clang/LLVM with ARCHER
+support execute the following commands in your command-line
+(instructions are based on bash shell, GCC-4.9.3 version and Ninja
+build system).
+
+Build Clang/LLVM 3.9 with ARCHER support by running `install.sh`:
+
+    export LLVM_INSTALL=$HOME/usr
+    ./install.sh --prefix=$LLVM_INSTALL [default: --prefix=/usr]
 
 The installation script will create a folder called **LLVM** at the same
-level of the ARCHER directory and install LLVM to *llvm_install_path*.
+level of the *llvm<sub>archer</sub>* directory and install LLVM into
+*LLVM<sub>INSTALL</sub>*.
 
 In case your GCC is not installed in a standard path you need to
 specify the GCC toolchain path for LLVM/Clang using the flag
 *&#x2013;gcc-toolchain-path*:
 
-    ./install.sh --prefix=llvm_install_path --gcc-toolchain-path=gcc_toolchain_path
+    ./install.sh --prefix=$LLVM_INSTALL --gcc-toolchain-path=gcc_toolchain_path
 
 Once the installation completes, you need to setup your environement
 to allow ARCHER to work correctly.
 
 Please set the following path variables:
 
-    export PATH=${LLVM_INSTALL}/bin:${LLVM_INSTALL}/bin/archer:\${PATH}"
-    export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:\${LD_LIBRARY_PATH}"
+    export PATH=${LLVM_INSTALL}/bin:${PATH}"
+    export LD_LIBRARY_PATH=${LLVM_INSTALL}/lib:${LD_LIBRARY_PATH}"
 
 To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
+
+## Options<a id="sec-4-3" name="sec-4-3"></a>
 
 # Contacts and Support<a id="sec-5" name="sec-5"></a>
 
