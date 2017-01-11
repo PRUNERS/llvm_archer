@@ -316,9 +316,9 @@ PROCS=$[$PROCS/2]
 echo
 echook "Installing LLVM/Clang..."
 
-WORKING_DIR=`pwd`
 cd ..
-BASE=`readlink -e ${BASE}`
+WORKING_DIR=`pwd`
+BASE=$WORKING_DIR/${BASE}`
 mkdir -p ${BASE}
 cd ${BASE}
 
