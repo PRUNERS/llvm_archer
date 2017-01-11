@@ -2,32 +2,32 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgef1802f">1. License</a></li>
-<li><a href="#org9efb4f7">2. Introduction</a></li>
-<li><a href="#orgbe97a07">3. Prerequisites</a></li>
-<li><a href="#orgad4e0d9">4. Installation</a>
+<li><a href="#org9768e35">1. License</a></li>
+<li><a href="#org19e5c50">2. Introduction</a></li>
+<li><a href="#org54f469b">3. Prerequisites</a></li>
+<li><a href="#orgc3ddbe0">4. Installation</a>
 <ul>
-<li><a href="#org059dd49">4.1. Manual Building</a></li>
-<li><a href="#orge4946fc">4.2. Automatic Building</a></li>
-<li><a href="#org44cf98c">4.3. Options</a></li>
+<li><a href="#org708d482">4.1. Manual Building</a></li>
+<li><a href="#org3cc1650">4.2. Automatic Building</a></li>
+<li><a href="#orgfa23b4a">4.3. Options</a></li>
 </ul>
 </li>
-<li><a href="#orgd4000c2">5. Publications</a></li>
-<li><a href="#org180df85">6. Contacts and Support</a></li>
-<li><a href="#org732d210">7. Sponsors</a></li>
+<li><a href="#org7088c99">5. Publications</a></li>
+<li><a href="#orgfa3af95">6. Contacts and Support</a></li>
+<li><a href="#org301de4b">7. Sponsors</a></li>
 </ul>
 </div>
 </div>
 
 
-<a id="orgef1802f"></a>
+<a id="org9768e35"></a>
 
 # License
 
 Please see LICENSE for usage terms.
 
 
-<a id="org9efb4f7"></a>
+<a id="org19e5c50"></a>
 
 # Introduction
 
@@ -42,7 +42,7 @@ on open-source tools infrastructure such as LLVM, ThreadSanitizer, and
 OMPT to provide portability.
 
 
-<a id="orgbe97a07"></a>
+<a id="org54f469b"></a>
 
 # Prerequisites
 
@@ -58,7 +58,7 @@ development at <https://github.com/OpenMPToolsInterface/LLVM-openmp>
 (under the branch "align-to-tr").
 
 
-<a id="orgad4e0d9"></a>
+<a id="orgc3ddbe0"></a>
 
 # Installation
 
@@ -66,7 +66,7 @@ ARCHER has been developed under LLVM 3.9 (for more information visit
 <http://llvm.org>).
 
 
-<a id="org059dd49"></a>
+<a id="org708d482"></a>
 
 ## Manual Building
 
@@ -74,7 +74,7 @@ For a manual building please visit the GitHub page
 <https://github.com/PRUNER/archer>.
 
 
-<a id="orge4946fc"></a>
+<a id="org3cc1650"></a>
 
 ## Automatic Building
 
@@ -107,7 +107,7 @@ To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
 
-<a id="org44cf98c"></a>
+<a id="orgfa23b4a"></a>
 
 ## Options
 
@@ -140,7 +140,7 @@ with ARCHER support.
       --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
 
 
-<a id="orgd4000c2"></a>
+<a id="org7088c99"></a>
 
 # Publications
 
@@ -158,7 +158,7 @@ with ARCHER support.
     40–47. <http://dl.acm.org/citation.cfm?id=2688369>
 
 
-<a id="org180df85"></a>
+<a id="orgfa3af95"></a>
 
 # Contacts and Support
 
@@ -169,7 +169,7 @@ with ARCHER support.
     <ul style="list-style-type:circle"> <li> <a href="mailto:simone@cs.utah.edu?Subject=[archer-dev]%20" target="_top">Simone Atzeni</a> </li> <li> <a href="mailto:protze@itc.rwth-aachen.de?Subject=[archer-dev]%20" target="_top">Joachim Protze</a> </li> </ul>
 
 
-<a id="org732d210"></a>
+<a id="org301de4b"></a>
 
 # Sponsors
 
