@@ -318,7 +318,7 @@ echook "Installing LLVM/Clang..."
 
 WORKING_DIR=`pwd`
 cd ..
-BASE=`realpath ${BASE}`
+BASE=`readlink -e ${BASE}`
 mkdir -p ${BASE}
 cd ${BASE}
 
