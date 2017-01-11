@@ -319,7 +319,6 @@ echook "Installing LLVM/Clang..."
 cd ..
 WORKING_DIR=`pwd`
 BASE=$WORKING_DIR/${BASE}
-echo $BASE
 mkdir -p ${BASE}
 cd ${BASE}
 
