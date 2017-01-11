@@ -2,32 +2,32 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org150c577">1. License</a></li>
-<li><a href="#orgaade682">2. Introduction</a></li>
-<li><a href="#org6ae3bc7">3. Prerequisites</a></li>
-<li><a href="#org9b49216">4. Installation</a>
+<li><a href="#org5a9843e">1. License</a></li>
+<li><a href="#org2037552">2. Introduction</a></li>
+<li><a href="#orgc7f91f8">3. Prerequisites</a></li>
+<li><a href="#org7bdaae6">4. Installation</a>
 <ul>
-<li><a href="#org5beeeba">4.1. Manual Building</a></li>
-<li><a href="#orgc421146">4.2. Automatic Building</a></li>
-<li><a href="#org2e1d8eb">4.3. Options</a></li>
+<li><a href="#orgdce6d2c">4.1. Manual Building</a></li>
+<li><a href="#orgf171a52">4.2. Automatic Building</a></li>
+<li><a href="#org5a80d9c">4.3. Options</a></li>
 </ul>
 </li>
-<li><a href="#orgb78012e">5. Publications</a></li>
-<li><a href="#orgee8af32">6. Contacts and Support</a></li>
-<li><a href="#org6bb216a">7. Sponsors</a></li>
+<li><a href="#orgdf6c8ac">5. Publications</a></li>
+<li><a href="#org09edc4a">6. Contacts and Support</a></li>
+<li><a href="#orgf6b71cf">7. Sponsors</a></li>
 </ul>
 </div>
 </div>
 
 
-<a id="org150c577"></a>
+<a id="org5a9843e"></a>
 
 # License
 
 Please see LICENSE for usage terms.
 
 
-<a id="orgaade682"></a>
+<a id="org2037552"></a>
 
 # Introduction
 
@@ -42,7 +42,7 @@ on open-source tools infrastructure such as LLVM, ThreadSanitizer, and
 OMPT to provide portability.
 
 
-<a id="org6ae3bc7"></a>
+<a id="orgc7f91f8"></a>
 
 # Prerequisites
 
@@ -58,7 +58,7 @@ development at <https://github.com/OpenMPToolsInterface/LLVM-openmp>
 (under the branch "align-to-tr").
 
 
-<a id="org9b49216"></a>
+<a id="org7bdaae6"></a>
 
 # Installation
 
@@ -66,7 +66,7 @@ ARCHER has been developed under LLVM 3.9 (for more information visit
 <http://llvm.org>).
 
 
-<a id="org5beeeba"></a>
+<a id="orgdce6d2c"></a>
 
 ## Manual Building
 
@@ -74,7 +74,7 @@ For a manual building please visit the GitHub page
 <https://github.com/PRUNER/archer>.
 
 
-<a id="orgc421146"></a>
+<a id="orgf171a52"></a>
 
 ## Automatic Building
 
@@ -88,11 +88,12 @@ build system).
 Build Clang/LLVM 3.9 with ARCHER support by running `install.sh`:
 
     export LLVM_INSTALL=$HOME/usr
-    ./install.sh --prefix=$LLVM_INSTALL [default: --prefix=/usr]
+    ./install.sh <path-to-installation-folder>
 
 The installation script will create a folder called *LLVM* at the same
 level of the *llvm\_archer* directory and install LLVM into
-*LLVM\_INSTALL*.
+*LLVM\_INSTALL*. By default the script will try to install the software
+under "/usr".
 
 Once the installation completes, you need to setup your environement
 to allow ARCHER to work correctly.
@@ -106,7 +107,7 @@ To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
 
-<a id="org2e1d8eb"></a>
+<a id="org5a80d9c"></a>
 
 ## Options
 
@@ -139,7 +140,7 @@ with ARCHER support.
       --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
 
 
-<a id="orgb78012e"></a>
+<a id="orgdf6c8ac"></a>
 
 # Publications
 
@@ -157,7 +158,7 @@ with ARCHER support.
     40–47. <http://dl.acm.org/citation.cfm?id=2688369>
 
 
-<a id="orgee8af32"></a>
+<a id="org09edc4a"></a>
 
 # Contacts and Support
 
@@ -168,7 +169,7 @@ with ARCHER support.
     <ul style="list-style-type:circle"> <li> <a href="mailto:simone@cs.utah.edu?Subject=[archer-dev]%20" target="_top">Simone Atzeni</a> </li> <li> <a href="mailto:protze@itc.rwth-aachen.de?Subject=[archer-dev]%20" target="_top">Joachim Protze</a> </li> </ul>
 
 
-<a id="org6bb216a"></a>
+<a id="orgf6b71cf"></a>
 
 # Sponsors
 
