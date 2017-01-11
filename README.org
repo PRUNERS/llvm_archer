@@ -98,15 +98,15 @@ Options
   --prefix=<value>             = Specify an installation path.
   --build-system=<value>       = Specify a build system generator. Please run
                                  'man cmake-generators' for a list of generators
-                                 available for this platform.
+                                 available for this platform. Default is Ninja.
   --release=<value>            = Specify the release version of Clang/LLVM that
-                                 will be installed (>= 39).
+                                 will be installed (>= 39). Default is 3.9.
   --http                       = Enables GitHub web url in case SSH key and
                                  passphrase are not set in the GitHub account.
-  --update                     = Update previous building.
+  --update                     = Update previous building. Default is SSH.
   --omp-tsan-support           = Enabled ThreadSanitizer support in official
-                                 LLVM OpenMP runtime, if not set an LLVM OpenMP
-                                 Runtime with OMPT support will be used.
+                                 LLVM OpenMP runtime. Default is an LLVM OpenMP
+                                 Runtime with OMPT support.
   --build-type=<value>         = Specify the type of build. Accepted values
                                  are Release (default), Debug or RelWithDebInfo.
   --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
