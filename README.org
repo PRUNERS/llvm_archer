@@ -43,7 +43,7 @@ http://llvm.org).
 
 ** Manual Building
 For a manual building please visit the GitHub page
-https://github.com/PRUNER/archer.
+https://github.com/PRUNERS/PRUNERS-ARCHER.
 
 ** Automatic Building
 ARCHER comes both as standalone and LLVM tool.

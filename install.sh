@@ -336,7 +336,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
-    ARCHER_REPO="https://github.com/PRUNER/archer.git"
+    ARCHER_REPO="https://github.com/PRUNERS/PRUNERS-ARCHER.git"
     if [ "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
     else
@@ -349,7 +349,7 @@ else
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
-    ARCHER_REPO="git@github.com:PRUNER/archer.git"
+    ARCHER_REPO="git@github.com:PRUNERS/PRUNERS-ARCHER.git"
     if [  "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
     else
