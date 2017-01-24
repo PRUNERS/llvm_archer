@@ -326,7 +326,7 @@ else
 fi
 
 if [ "$LLVM_ONLY" == "false" ]; then
-    ARCHER_OFF="-DLLVM_TOOL_ARCHER_BUILD=OFF \\"
+    ARCHER_OFF="-DLLVM_TOOL_ARCHER_BUILD=OFF"
 fi
 
 cd ..
@@ -470,7 +470,7 @@ else
     CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_TARGETS_TO_BUILD=Native \
-      ${ARCHER_OFF}
+      ${ARCHER_OFF} \
       ${GCC_TOOLCHAIN_PATH} \
       "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
