@@ -126,6 +126,7 @@ RELEASE="39"
 # ARCHER_RELEASE="10"
 ARCHER_RELEASE=
 HTTP=false
+LLVM_ONLY=false
 UPDATE=false
 TSAN_OMPT=true
 BUILD_TYPE=Release
@@ -166,6 +167,10 @@ do
             ;;
         --http)
             HTTP=true
+            shift
+            ;;
+        --llvm-only)
+            LLVM_ONLY=true
             shift
             ;;
         --update)
@@ -314,11 +319,23 @@ fi
 PROCS=$[$PROCS/2]
 
 echo
-echook "Installing LLVM/Clang..."
+if [ "$LLVM_ONLY" == "true" ]; then
+    echook "Installing LLVM/Clang..."
+else
+    echook "Installing LLVM/Clang with ARCHER Support..."
+fi
+
+if [ "$LLVM_ONLY" == "false" ]; then
+    ARCHER_OFF="-DLLVM_TOOL_ARCHER_BUILD=OFF \\"
+fi
 
 cd ..
 WORKING_DIR=`pwd`
-BASE=$WORKING_DIR/${BASE}
+if [[ "$BASE" = /* ]]; then
+    BASE=${BASE}
+else
+    BASE=$WORKING_DIR/${BASE}
+fi
 mkdir -p ${BASE}
 cd ${BASE}
 
@@ -336,7 +353,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
-    ARCHER_REPO="https://github.com/PRUNERS/PRUNERS-ARCHER.git"
+    ARCHER_REPO="https://github.com/PRUNERS/ARCHER.git"
     if [ "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
     else
@@ -349,7 +366,7 @@ else
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
-    ARCHER_REPO="git@github.com:PRUNERS/PRUNERS-ARCHER.git"
+    ARCHER_REPO="git@github.com:PRUNERS/ARCHER.git"
     if [  "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
     else
@@ -409,9 +426,11 @@ echook "Obtaining LLVM/Clang..."
 git_clone_or_pull ${CLANG_REPO} ${CLANG_SRC} ${CLANG_RELEASE}
 
 # Archer Sources
-echo
-echook "Obtaining Archer..."
-git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+if [ "$LLVM_ONLY" == "false" ]; then
+    echo
+    echook "Obtaining Archer..."
+    git_clone_or_pull ${ARCHER_REPO} ${ARCHER_SRC} ${ARCHER_RELEASE}
+fi
 
 # Runtime Sources
 echo
@@ -419,9 +438,11 @@ echook "Obtaining LLVM Runtime..."
 git_clone_or_pull ${LLVMRT_REPO} ${LLVMRT_SRC} ${LLVMRT_RELEASE}
 
 # OpenMP Runtime Sources
-echo
-echook "Obtaining LLVM OpenMP Runtime..."
-git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC} ${OPENMPRT_RELEASE}
+if [ "$LLVM_ONLY" == "false" ]; then
+    echo
+    echook "Obtaining LLVM OpenMP Runtime..."
+    git_clone_or_pull ${OPENMPRT_REPO} ${OPENMPRT_SRC} ${OPENMPRT_RELEASE}
+fi
 
 # libc++ Sources
 echo
@@ -449,7 +470,7 @@ else
     CC=$(which gcc) CXX=$(which g++) cmake -G "${BUILD_SYSTEM}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_TARGETS_TO_BUILD=Native \
-      -DLLVM_TOOL_ARCHER_BUILD=OFF \
+      ${ARCHER_OFF}
       ${GCC_TOOLCHAIN_PATH} \
       "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
@@ -463,7 +484,20 @@ export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
 echo
 echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
-if [  "$TSAN_OMPT" == "true" ]; then
+if [ "$LLVM_ONLY" == "true" ]; then
+    cmake -G "${BUILD_SYSTEM}" \
+          -D CMAKE_C_COMPILER=clang \
+          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
+          -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
+          -D LLVM_ENABLE_LIBCXX=ON \
+          -D LLVM_ENABLE_LIBCXXABI=ON \
+          -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
+          -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
+          ${GCC_TOOLCHAIN_PATH} \
+          ${LLVM_SRC}
+elif [  "$TSAN_OMPT" == "true" ]; then
     cmake -G "${BUILD_SYSTEM}" \
           -D CMAKE_C_COMPILER=clang \
           -D CMAKE_CXX_COMPILER=clang++ \

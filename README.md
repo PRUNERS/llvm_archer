@@ -2,32 +2,32 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orga921090">1. License</a></li>
-<li><a href="#orga3ea183">2. Introduction</a></li>
-<li><a href="#org6d43a72">3. Prerequisites</a></li>
-<li><a href="#org37c4f59">4. Installation</a>
+<li><a href="#orgb79d706">1. License</a></li>
+<li><a href="#org1b50543">2. Introduction</a></li>
+<li><a href="#org277ee2b">3. Prerequisites</a></li>
+<li><a href="#org8a4a69a">4. Installation</a>
 <ul>
-<li><a href="#org4f481f5">4.1. Manual Building</a></li>
-<li><a href="#org825e459">4.2. Automatic Building</a></li>
-<li><a href="#orgcb44e5f">4.3. Options</a></li>
+<li><a href="#org01198b9">4.1. Manual Building</a></li>
+<li><a href="#orgdb9ae9a">4.2. Automatic Building</a></li>
+<li><a href="#org06199b9">4.3. Options</a></li>
 </ul>
 </li>
-<li><a href="#org9ce2d30">5. Publications</a></li>
-<li><a href="#org1c03678">6. Contacts and Support</a></li>
-<li><a href="#org5d97976">7. Sponsors</a></li>
+<li><a href="#org9223ec1">5. Publications</a></li>
+<li><a href="#org52c6092">6. Contacts and Support</a></li>
+<li><a href="#orgc5ab3e1">7. Sponsors</a></li>
 </ul>
 </div>
 </div>
 
 
-<a id="orga921090"></a>
+<a id="orgb79d706"></a>
 
 # License
 
 Please see LICENSE for usage terms.
 
 
-<a id="orga3ea183"></a>
+<a id="org1b50543"></a>
 
 # Introduction
 
@@ -42,7 +42,7 @@ on open-source tools infrastructure such as LLVM, ThreadSanitizer, and
 OMPT to provide portability.
 
 
-<a id="org6d43a72"></a>
+<a id="org277ee2b"></a>
 
 # Prerequisites
 
@@ -58,7 +58,7 @@ development at <https://github.com/OpenMPToolsInterface/LLVM-openmp>
 (under the branch "align-to-tr").
 
 
-<a id="org37c4f59"></a>
+<a id="org8a4a69a"></a>
 
 # Installation
 
@@ -66,15 +66,15 @@ ARCHER has been developed under LLVM 3.9 (for more information visit
 <http://llvm.org>).
 
 
-<a id="org4f481f5"></a>
+<a id="org01198b9"></a>
 
 ## Manual Building
 
 For a manual building please visit the GitHub page
-<https://github.com/PRUNERS/PRUNERS-ARCHER>.
+<https://github.com/PRUNERS/ARCHER>.
 
 
-<a id="org825e459"></a>
+<a id="orgdb9ae9a"></a>
 
 ## Automatic Building
 
@@ -107,7 +107,7 @@ To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
 
-<a id="orgcb44e5f"></a>
+<a id="org06199b9"></a>
 
 ## Options
 
@@ -131,6 +131,8 @@ with ARCHER support.
                                      will be installed (>= 39). Default is 3.9.
       --http                       = Enables GitHub web url in case SSH key and
                                      passphrase are not set in the GitHub account.
+      --llvm-only                  = Build and install only Clang/LLVM without
+                                     ARCHER support and OpenMP runtime.
       --update                     = Update previous building. Default is SSH.
       --omp-tsan-support           = Enabled ThreadSanitizer support in official
                                      LLVM OpenMP runtime. Default is an LLVM OpenMP
@@ -140,7 +142,7 @@ with ARCHER support.
       --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
 
 
-<a id="org9ce2d30"></a>
+<a id="org9223ec1"></a>
 
 # Publications
 
@@ -158,7 +160,7 @@ with ARCHER support.
     40–47. <http://dl.acm.org/citation.cfm?id=2688369>
 
 
-<a id="org1c03678"></a>
+<a id="org52c6092"></a>
 
 # Contacts and Support
 
@@ -169,7 +171,7 @@ with ARCHER support.
     <ul style="list-style-type:circle"> <li> <a href="mailto:simone@cs.utah.edu?Subject=[archer-dev]%20" target="_top">Simone Atzeni</a> </li> <li> <a href="mailto:protze@itc.rwth-aachen.de?Subject=[archer-dev]%20" target="_top">Joachim Protze</a> </li> </ul>
 
 
-<a id="org5d97976"></a>
+<a id="orgc5ab3e1"></a>
 
 # Sponsors
 

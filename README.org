@@ -43,7 +43,7 @@ http://llvm.org).
 
 ** Manual Building
 For a manual building please visit the GitHub page
-https://github.com/PRUNERS/PRUNERS-ARCHER.
+https://github.com/PRUNERS/ARCHER.
 
 ** Automatic Building
 ARCHER comes both as standalone and LLVM tool.
@@ -103,6 +103,8 @@ Options
                                  will be installed (>= 39). Default is 3.9.
   --http                       = Enables GitHub web url in case SSH key and
                                  passphrase are not set in the GitHub account.
+  --llvm-only                  = Build and install only Clang/LLVM without
+                                 ARCHER support and OpenMP runtime.
   --update                     = Update previous building. Default is SSH.
   --omp-tsan-support           = Enabled ThreadSanitizer support in official
                                  LLVM OpenMP runtime. Default is an LLVM OpenMP
