@@ -243,7 +243,7 @@ if mygit=$(which git 2>/dev/null)
 then
     echook Found git at $mygit [OK]
 else
-    echoc Cannot find git. Necessary for building ARCHER. [ERROR]
+    echoc Cannot find git. Necessary for building Archer. [ERROR]
     myerrors=1
 fi
 
@@ -258,7 +258,7 @@ then
         myerrors=1
     fi
 else
-    echoc Cannot find cmake. Necessary for building ARCHER. [ERROR]
+    echoc Cannot find cmake. Necessary for building Archer. [ERROR]
     myerrors=1
 fi
 
@@ -273,7 +273,7 @@ then
         myerrors=1
     fi
 else
-    echoc Cannot find gcc. Necessary for building ARCHER. [ERROR]
+    echoc Cannot find gcc. Necessary for building Archer. [ERROR]
     myerrors=1
 fi
 
@@ -288,13 +288,13 @@ then
         myerrors=1
     fi
 else
-    echoc Cannot find python. Necessary for building ARCHER. [ERROR]
+    echoc Cannot find python. Necessary for building Archer. [ERROR]
     myerrors=1
 fi
 
 if [ $myerrors -gt 0 ]
 then
-    echoc Stop building ARCHER for missing requirements.
+    echoc Stop building Archer for missing requirements.
     exit 1
 fi
 
@@ -322,7 +322,7 @@ echo
 if [ "$LLVM_ONLY" == "true" ]; then
     echook "Installing LLVM/Clang..."
 else
-    echook "Installing LLVM/Clang with ARCHER Support..."
+    echook "Installing LLVM/Clang with Archer Support..."
 fi
 
 if [ "$LLVM_ONLY" == "false" ]; then
@@ -353,7 +353,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXX_REPO="https://github.com/llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
-    ARCHER_REPO="https://github.com/PRUNERS/ARCHER.git"
+    ARCHER_REPO="https://github.com/PRUNERS/archer.git"
     if [ "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
     else
@@ -366,7 +366,7 @@ else
     LIBCXX_REPO="git@github.com:llvm-mirror/libcxx.git"
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
-    ARCHER_REPO="git@github.com:PRUNERS/ARCHER.git"
+    ARCHER_REPO="git@github.com:PRUNERS/archer.git"
     if [  "$TSAN_OMPT" == "true" ]; then
         OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
     else
