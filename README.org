@@ -1,4 +1,4 @@
-#+DESCRIPTION: ARCHER Installation Script
+#+DESCRIPTION: Archer Installation Script
 #+KEYWORDS:
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
@@ -14,46 +14,46 @@
 Please see LICENSE for usage terms.
 
 * Introduction
-#+HTML: <img src="resources/images/archer_logo.png" hspace="5" vspace="5" height="45%" width="45%" alt="ARCHER Logo" title="ARCHER" align="right" />
+#+HTML: <img src="resources/images/archer_logo.png" hspace="5" vspace="5" height="45%" width="45%" alt="Archer Logo" title="Archer" align="right" />
 
-*ARCHER* is a data race detector for OpenMP programs.
+*Archer* is a data race detector for OpenMP programs.
 # <span style="font-weight: bold; font-variant: small-caps">archer</span>
 
-ARCHER combines static and dynamic techniques to identify data races
+Archer combines static and dynamic techniques to identify data races
 in large OpenMP applications, leading to low runtime and memory
 overheads, while still offering high accuracy and precision. It builds
 on open-source tools infrastructure such as LLVM, ThreadSanitizer, and
 OMPT to provide portability.
 
 * Prerequisites
-To compile ARCHER you need an host Clang/LLVM version >= 3.9, a
+To compile Archer you need an host Clang/LLVM version >= 3.9, a
 CMake version >= 3.4.3.
 
 Ninja build system is preferred. For more information how to obtain
 Ninja visit https://martine.github.io/ninja.
 
-ARCHER has been tested with the LLVM OpenMP Runtime version >= 3.9,
+Archer has been tested with the LLVM OpenMP Runtime version >= 3.9,
 and with the LLVM OpenMP Runtime with OMPT support currently under
 development at https://github.com/OpenMPToolsInterface/LLVM-openmp
 (under the branch "align-to-tr").
 
 * Installation
-ARCHER has been developed under LLVM 3.9 (for more information visit
+Archer has been developed under LLVM 3.9 (for more information visit
 http://llvm.org).
 
 ** Manual Building
 For a manual building please visit the GitHub page
-https://github.com/PRUNERS/ARCHER.
+https://github.com/PRUNERS/archer.
 
 ** Automatic Building
-ARCHER comes both as standalone and LLVM tool.
+Archer comes both as standalone and LLVM tool.
 
-In order to obtain and automatically build Clang/LLVM with ARCHER
+In order to obtain and automatically build Clang/LLVM with Archer
 support execute the following commands in your command-line
 (instructions are based on bash shell, GCC-4.9.3 version and Ninja
 build system).
 
-Build Clang/LLVM 3.9 with ARCHER support by running =install.sh=:
+Build Clang/LLVM 3.9 with Archer support by running =install.sh=:
 
 #+BEGIN_SRC sh :exports code
   export LLVM_INSTALL=$HOME/usr
@@ -66,7 +66,7 @@ level of the /llvm_archer/ directory and install LLVM into
 under "/usr".
 
 Once the installation completes, you need to setup your environement
-to allow ARCHER to work correctly.
+to allow Archer to work correctly.
 
 Please set the following path variables:
 
@@ -87,7 +87,7 @@ Running the command:
 #+END_SRC
 
 shows the options available for building and installing Clang/LLVM
-with ARCHER support.
+with Archer support.
 
 #+BEGIN_SRC
 Usage
@@ -104,7 +104,7 @@ Options
   --http                       = Enables GitHub web url in case SSH key and
                                  passphrase are not set in the GitHub account.
   --llvm-only                  = Build and install only Clang/LLVM without
-                                 ARCHER support and OpenMP runtime.
+                                 Archer support and OpenMP runtime.
   --update                     = Update previous building. Default is SSH.
   --omp-tsan-support           = Enabled ThreadSanitizer support in official
                                  LLVM OpenMP runtime. Default is an LLVM OpenMP

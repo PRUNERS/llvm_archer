@@ -2,90 +2,90 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb79d706">1. License</a></li>
-<li><a href="#org1b50543">2. Introduction</a></li>
-<li><a href="#org277ee2b">3. Prerequisites</a></li>
-<li><a href="#org8a4a69a">4. Installation</a>
+<li><a href="#org7b6b96d">1. License</a></li>
+<li><a href="#orgc47724c">2. Introduction</a></li>
+<li><a href="#orgc1da22a">3. Prerequisites</a></li>
+<li><a href="#orgd7eeea2">4. Installation</a>
 <ul>
-<li><a href="#org01198b9">4.1. Manual Building</a></li>
-<li><a href="#orgdb9ae9a">4.2. Automatic Building</a></li>
-<li><a href="#org06199b9">4.3. Options</a></li>
+<li><a href="#org66b4446">4.1. Manual Building</a></li>
+<li><a href="#orgbab941b">4.2. Automatic Building</a></li>
+<li><a href="#orga7a66da">4.3. Options</a></li>
 </ul>
 </li>
-<li><a href="#org9223ec1">5. Publications</a></li>
-<li><a href="#org52c6092">6. Contacts and Support</a></li>
-<li><a href="#orgc5ab3e1">7. Sponsors</a></li>
+<li><a href="#org57d4345">5. Publications</a></li>
+<li><a href="#org23eb050">6. Contacts and Support</a></li>
+<li><a href="#orgdde9d3d">7. Sponsors</a></li>
 </ul>
 </div>
 </div>
 
 
-<a id="orgb79d706"></a>
+<a id="org7b6b96d"></a>
 
 # License
 
 Please see LICENSE for usage terms.
 
 
-<a id="org1b50543"></a>
+<a id="orgc47724c"></a>
 
 # Introduction
 
-<img src="resources/images/archer_logo.png" hspace="5" vspace="5" height="45%" width="45%" alt="ARCHER Logo" title="ARCHER" align="right" />
+<img src="resources/images/archer_logo.png" hspace="5" vspace="5" height="45%" width="45%" alt="Archer Logo" title="Archer" align="right" />
 
-**ARCHER** is a data race detector for OpenMP programs.
+**Archer** is a data race detector for OpenMP programs.
 
-ARCHER combines static and dynamic techniques to identify data races
+Archer combines static and dynamic techniques to identify data races
 in large OpenMP applications, leading to low runtime and memory
 overheads, while still offering high accuracy and precision. It builds
 on open-source tools infrastructure such as LLVM, ThreadSanitizer, and
 OMPT to provide portability.
 
 
-<a id="org277ee2b"></a>
+<a id="orgc1da22a"></a>
 
 # Prerequisites
 
-To compile ARCHER you need an host Clang/LLVM version >= 3.9, a
+To compile Archer you need an host Clang/LLVM version >= 3.9, a
 CMake version >= 3.4.3.
 
 Ninja build system is preferred. For more information how to obtain
 Ninja visit <https://martine.github.io/ninja>.
 
-ARCHER has been tested with the LLVM OpenMP Runtime version >= 3.9,
+Archer has been tested with the LLVM OpenMP Runtime version >= 3.9,
 and with the LLVM OpenMP Runtime with OMPT support currently under
 development at <https://github.com/OpenMPToolsInterface/LLVM-openmp>
 (under the branch "align-to-tr").
 
 
-<a id="org8a4a69a"></a>
+<a id="orgd7eeea2"></a>
 
 # Installation
 
-ARCHER has been developed under LLVM 3.9 (for more information visit
+Archer has been developed under LLVM 3.9 (for more information visit
 <http://llvm.org>).
 
 
-<a id="org01198b9"></a>
+<a id="org66b4446"></a>
 
 ## Manual Building
 
 For a manual building please visit the GitHub page
-<https://github.com/PRUNERS/ARCHER>.
+<https://github.com/PRUNERS/archer>.
 
 
-<a id="orgdb9ae9a"></a>
+<a id="orgbab941b"></a>
 
 ## Automatic Building
 
-ARCHER comes both as standalone and LLVM tool.
+Archer comes both as standalone and LLVM tool.
 
-In order to obtain and automatically build Clang/LLVM with ARCHER
+In order to obtain and automatically build Clang/LLVM with Archer
 support execute the following commands in your command-line
 (instructions are based on bash shell, GCC-4.9.3 version and Ninja
 build system).
 
-Build Clang/LLVM 3.9 with ARCHER support by running `install.sh`:
+Build Clang/LLVM 3.9 with Archer support by running `install.sh`:
 
     export LLVM_INSTALL=$HOME/usr
     ./install.sh <path-to-installation-folder>
@@ -96,7 +96,7 @@ level of the *llvm\_archer* directory and install LLVM into
 under "/usr".
 
 Once the installation completes, you need to setup your environement
-to allow ARCHER to work correctly.
+to allow Archer to work correctly.
 
 Please set the following path variables:
 
@@ -107,7 +107,7 @@ To make the environment permanent add the previous lines or
 equivalents to your shell start-up script such as "~/.bashrc".
 
 
-<a id="org06199b9"></a>
+<a id="orga7a66da"></a>
 
 ## Options
 
@@ -116,7 +116,7 @@ Running the command:
     ./install --help
 
 shows the options available for building and installing Clang/LLVM
-with ARCHER support.
+with Archer support.
 
     Usage
 
@@ -132,7 +132,7 @@ with ARCHER support.
       --http                       = Enables GitHub web url in case SSH key and
                                      passphrase are not set in the GitHub account.
       --llvm-only                  = Build and install only Clang/LLVM without
-                                     ARCHER support and OpenMP runtime.
+                                     Archer support and OpenMP runtime.
       --update                     = Update previous building. Default is SSH.
       --omp-tsan-support           = Enabled ThreadSanitizer support in official
                                      LLVM OpenMP runtime. Default is an LLVM OpenMP
@@ -142,7 +142,7 @@ with ARCHER support.
       --gcc-toolchain-path=<value> = Specify the GCC toolchain path.
 
 
-<a id="org9223ec1"></a>
+<a id="org57d4345"></a>
 
 # Publications
 
@@ -160,7 +160,7 @@ with ARCHER support.
     40–47. <http://dl.acm.org/citation.cfm?id=2688369>
 
 
-<a id="org52c6092"></a>
+<a id="org23eb050"></a>
 
 # Contacts and Support
 
@@ -171,7 +171,7 @@ with ARCHER support.
     <ul style="list-style-type:circle"> <li> <a href="mailto:simone@cs.utah.edu?Subject=[archer-dev]%20" target="_top">Simone Atzeni</a> </li> <li> <a href="mailto:protze@itc.rwth-aachen.de?Subject=[archer-dev]%20" target="_top">Joachim Protze</a> </li> </ul>
 
 
-<a id="orgc5ab3e1"></a>
+<a id="orgdde9d3d"></a>
 
 # Sponsors
 
