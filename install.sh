@@ -382,7 +382,7 @@ if [ "$RELEASE" == "dev" ]; then
     LIBCXXABI_RELEASE=
     LIBUNWIND_RELEASE=
     if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=align-to-tr
+        OPENMPRT_RELEASE=towards_tr4
     else
         OPENMPRT_RELEASE="release_"$RELEASE
     fi
@@ -394,7 +394,7 @@ else
     LIBCXXABI_RELEASE="release_"$RELEASE
     LIBUNWIND_RELEASE="release_"$RELEASE
     if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=align-to-tr
+        OPENMPRT_RELEASE=towards_tr4
     else
         OPENMPRT_RELEASE="release_"$RELEASE
     fi
@@ -508,6 +508,7 @@ elif [  "$TSAN_OMPT" == "true" ]; then
           -D LLVM_ENABLE_LIBCXXABI=ON \
           -D LIBCXXABI_USE_LLVM_UNWINDER=ON \
           -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
+          -D LIBOMP_OMP_VERSION=50 \
           -D LIBOMP_OMPT_SUPPORT=on \
           -D LIBOMP_OMPT_BLAME=on \
           -D LIBOMP_OMPT_TRACE=on \
