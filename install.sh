@@ -122,7 +122,7 @@ return 0
 
 BASE=
 LLVM_INSTALL=/usr
-RELEASE="39"
+RELEASE="60"
 # ARCHER_RELEASE="10"
 ARCHER_RELEASE=
 HTTP=false
@@ -354,11 +354,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNERS/archer.git"
-    if [ "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
-    else
-        OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
-    fi
+    OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
     CLANG_REPO="git@github.com:llvm-mirror/clang.git"
@@ -367,11 +363,7 @@ else
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNERS/archer.git"
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
-    else
-        OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
-    fi
+    OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
 fi
 
 if [ "$RELEASE" == "dev" ]; then
@@ -381,11 +373,7 @@ if [ "$RELEASE" == "dev" ]; then
     LIBCXX_RELEASE=
     LIBCXXABI_RELEASE=
     LIBUNWIND_RELEASE=
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=towards_tr4
-    else
-        OPENMPRT_RELEASE="release_"$RELEASE
-    fi
+    OPENMPRT_RELEASE=
 else
     LLVM_RELEASE="release_"$RELEASE
     CLANG_RELEASE="release_"$RELEASE
@@ -393,11 +381,7 @@ else
     LIBCXX_RELEASE="release_"$RELEASE
     LIBCXXABI_RELEASE="release_"$RELEASE
     LIBUNWIND_RELEASE="release_"$RELEASE
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=towards_tr4
-    else
-        OPENMPRT_RELEASE="release_"$RELEASE
-    fi
+    OPENMPRT_RELEASE="release_"$RELEASE
 fi
 
 # LLVM installation directory
