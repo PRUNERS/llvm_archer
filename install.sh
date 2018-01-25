@@ -122,7 +122,7 @@ return 0
 
 BASE=
 LLVM_INSTALL=/usr
-RELEASE="60"
+RELEASE="39"
 # ARCHER_RELEASE="10"
 ARCHER_RELEASE=
 HTTP=false
@@ -381,7 +381,7 @@ else
     LIBCXX_RELEASE="release_"$RELEASE
     LIBCXXABI_RELEASE="release_"$RELEASE
     LIBUNWIND_RELEASE="release_"$RELEASE
-    OPENMPRT_RELEASE="release_"$RELEASE
+    OPENMPRT_RELEASE="release_60"
 fi
 
 # LLVM installation directory
@@ -446,6 +446,7 @@ git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC} ${LIBUNWIND_RELEASE}
 # Compiling and installing LLVM
 echook "Bootstraping clang..."
 OLD_PATH=${PATH}
+OLD_C_INCLUDE_PATH=${C_INCLUDE_PATH}
 OLD_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
 if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
     echo "bootstrap already built!"
@@ -464,6 +465,7 @@ fi
 
 export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${OLD_LD_LIBRARY_PATH}"
 export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
+export C_INCLUDE_PATH="${LLVM_BOOTSTRAP}/include:${OLD_C_INCLUDE_PATH}"
 
 echo
 echook "Building LLVM/Clang..."
@@ -494,8 +496,6 @@ elif [  "$TSAN_OMPT" == "true" ]; then
           -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
           -D LIBOMP_OMP_VERSION=50 \
           -D LIBOMP_OMPT_SUPPORT=on \
-          -D LIBOMP_OMPT_BLAME=on \
-          -D LIBOMP_OMPT_TRACE=on \
           ${GCC_TOOLCHAIN_PATH} \
           ${LLVM_SRC}
 else
