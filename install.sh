@@ -472,8 +472,8 @@ echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
 if [ "$LLVM_ONLY" == "true" ]; then
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
@@ -485,8 +485,8 @@ if [ "$LLVM_ONLY" == "true" ]; then
           ${LLVM_SRC}
 elif [  "$TSAN_OMPT" == "true" ]; then
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
@@ -500,8 +500,8 @@ elif [  "$TSAN_OMPT" == "true" ]; then
           ${LLVM_SRC}
 else
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
