@@ -354,11 +354,7 @@ if [ "$HTTP" == "true" ]; then
     LIBCXXABI_REPO="https://github.com/llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="https://github.com/llvm-mirror/libunwind.git"
     ARCHER_REPO="https://github.com/PRUNERS/archer.git"
-    if [ "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_REPO="https://github.com/OpenMPToolsInterface/LLVM-openmp.git"
-    else
-        OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
-    fi
+    OPENMPRT_REPO="https://github.com/llvm-mirror/openmp.git"
 else
     LLVM_REPO="git@github.com:llvm-mirror/llvm.git"
     CLANG_REPO="git@github.com:llvm-mirror/clang.git"
@@ -367,11 +363,7 @@ else
     LIBCXXABI_REPO="git@github.com:llvm-mirror/libcxxabi.git"
     LIBUNWIND_REPO="git@github.com:llvm-mirror/libunwind.git"
     ARCHER_REPO="git@github.com:PRUNERS/archer.git"
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_REPO="git@github.com:OpenMPToolsInterface/LLVM-openmp.git"
-    else
-        OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
-    fi
+    OPENMPRT_REPO="git@github.com:llvm-mirror/openmp.git"
 fi
 
 if [ "$RELEASE" == "dev" ]; then
@@ -381,11 +373,7 @@ if [ "$RELEASE" == "dev" ]; then
     LIBCXX_RELEASE=
     LIBCXXABI_RELEASE=
     LIBUNWIND_RELEASE=
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=towards_tr4
-    else
-        OPENMPRT_RELEASE="release_"$RELEASE
-    fi
+    OPENMPRT_RELEASE=
 else
     LLVM_RELEASE="release_"$RELEASE
     CLANG_RELEASE="release_"$RELEASE
@@ -393,11 +381,7 @@ else
     LIBCXX_RELEASE="release_"$RELEASE
     LIBCXXABI_RELEASE="release_"$RELEASE
     LIBUNWIND_RELEASE="release_"$RELEASE
-    if [  "$TSAN_OMPT" == "true" ]; then
-        OPENMPRT_RELEASE=towards_tr4
-    else
-        OPENMPRT_RELEASE="release_"$RELEASE
-    fi
+    OPENMPRT_RELEASE="release_60"
 fi
 
 # LLVM installation directory
@@ -462,6 +446,7 @@ git_clone_or_pull ${LIBUNWIND_REPO} ${LIBUNWIND_SRC} ${LIBUNWIND_RELEASE}
 # Compiling and installing LLVM
 echook "Bootstraping clang..."
 OLD_PATH=${PATH}
+OLD_C_INCLUDE_PATH=${C_INCLUDE_PATH}
 OLD_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
 if [[ -f "${LLVM_BOOTSTRAP}/bin/clang" ]]; then
     echo "bootstrap already built!"
@@ -480,14 +465,15 @@ fi
 
 export LD_LIBRARY_PATH="${LLVM_BOOTSTRAP}/lib:${OLD_LD_LIBRARY_PATH}"
 export PATH="${LLVM_BOOTSTRAP}/bin:${OLD_PATH}"
+export C_INCLUDE_PATH="${LLVM_BOOTSTRAP}/include:${OLD_C_INCLUDE_PATH}"
 
 echo
 echook "Building LLVM/Clang..."
 cd ${LLVM_BUILD}
 if [ "$LLVM_ONLY" == "true" ]; then
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
@@ -499,8 +485,8 @@ if [ "$LLVM_ONLY" == "true" ]; then
           ${LLVM_SRC}
 elif [  "$TSAN_OMPT" == "true" ]; then
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
@@ -510,14 +496,12 @@ elif [  "$TSAN_OMPT" == "true" ]; then
           -D CLANG_DEFAULT_CXX_STDLIB=libc++ \
           -D LIBOMP_OMP_VERSION=50 \
           -D LIBOMP_OMPT_SUPPORT=on \
-          -D LIBOMP_OMPT_BLAME=on \
-          -D LIBOMP_OMPT_TRACE=on \
           ${GCC_TOOLCHAIN_PATH} \
           ${LLVM_SRC}
 else
     cmake -G "${BUILD_SYSTEM}" \
-          -D CMAKE_C_COMPILER=clang \
-          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_C_COMPILER=$(which clang) \
+          -D CMAKE_CXX_COMPILER=$(which clang++) \
           -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -D CMAKE_INSTALL_PREFIX:PATH=${LLVM_INSTALL} \
           -D CLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
