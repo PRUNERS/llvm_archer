@@ -459,7 +459,7 @@ else
       ${GCC_TOOLCHAIN_PATH} \
       "${LLVM_SRC}"
     cd "${LLVM_BOOTSTRAP}"
-    ${BUILD_CMD} -j${PROCS} -l${PROCS}
+    ${BUILD_CMD} -j${PROCS}
 
 fi
 
@@ -515,7 +515,7 @@ else
 fi
 
 cd "${LLVM_BUILD}"
-${BUILD_CMD} -j${PROCS} -l${PROCS}
+${BUILD_CMD} -j${PROCS}
 # ${BUILD_CMD} check-libarcher
 ${BUILD_CMD} install
 
